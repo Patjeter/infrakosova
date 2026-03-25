@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>InfraKosova · Platforma Qytetare</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 :root {
   --bg:#f2f4f7; --white:#ffffff; --border:#dde3ec;
   --text:#18243a; --muted:#6b7a99; --muted2:#9aaccc;
   --blue:#1a5fd4; --blue-bg:#eaf1fd;
   --green:#16a34a; --yellow:#d97706; --red:#dc2626; --planned:#2563eb;
-  --hdr:52px; --sb:236px; --panel:385px;
+  --hdr:52px; --nav:36px; --top:88px; --sb:268px; --panel:390px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;color:var(--text);}
@@ -33,44 +33,149 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;color:var(-
 .hdr{
   position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:1000;
   background:var(--white);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 16px;gap:12px;
-  box-shadow:0 1px 6px rgba(0,0,0,.07);
+  display:flex;align-items:center;padding:0 16px;gap:10px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
 .hdr-logo{
   background:var(--blue);color:#fff;font-family:'JetBrains Mono',monospace;
   font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;
   letter-spacing:.3px;white-space:nowrap;display:flex;align-items:center;gap:6px;
+  text-decoration:none;
 }
-.hdr-title{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;}
-.hdr-sub{font-size:11px;color:var(--muted2);}
+.hdr-ver{font-size:10px;color:var(--muted2);font-family:'JetBrains Mono',monospace;}
 .hdr-sep{flex:1;}
-.hdr-hint{font-size:11px;color:var(--muted2);font-style:italic;}
+.hdr-date{font-size:10px;color:var(--muted2);font-family:'JetBrains Mono',monospace;}
+
+/* ── NAVBAR ── */
+.nav{
+  position:fixed;top:var(--hdr);left:0;right:0;height:var(--nav);z-index:999;
+  background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:stretch;padding:0 16px;
+}
+.nav-item{
+  display:flex;align-items:center;padding:0 14px;
+  font-size:11px;font-weight:500;color:var(--muted);
+  text-decoration:none;border-bottom:2px solid transparent;
+  transition:color .15s,border-bottom-color .15s;cursor:pointer;white-space:nowrap;
+}
+.nav-item:hover{color:var(--text);}
+.nav-item.active{color:var(--blue);border-bottom-color:var(--blue);}
 
 /* ── SIDEBAR ── */
 .sb{
-  position:fixed;top:var(--hdr);left:0;bottom:0;width:var(--sb);z-index:800;
-  background:var(--white);border-right:1px solid var(--border);
+  position:fixed;top:var(--ik-top,80px);left:0;bottom:0;width:var(--sb);z-index:800;
+  background:#f8f9fc;border-right:1px solid var(--border);
   display:flex;flex-direction:column;
 }
 .sb-head{
-  padding:11px 14px 9px;border-bottom:1px solid var(--border);flex-shrink:0;
-  font-size:9px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--muted2);font-family:'JetBrains Mono',monospace;
+  padding:12px 14px 11px;border-bottom:1px solid var(--border);flex-shrink:0;
 }
-.sb-body{flex:1;overflow-y:auto;padding:7px;}
+.sb-head-label{
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted2);font-family:'JetBrains Mono',monospace;margin-bottom:9px;
+}
+.sb-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.sb-stat{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:7px;padding:7px 6px;text-align:center;
+}
+.sb-stat-n{
+  font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;
+  color:var(--text);line-height:1;margin-bottom:3px;
+}
+.sb-stat-n.green{color:var(--green);}
+.sb-stat-n.red{color:var(--red);}
+.sb-stat-lbl{font-size:8.5px;color:var(--muted2);letter-spacing:.3px;}
+
+.sb-body{flex:1;overflow-y:auto;padding:8px;}
 .sb-body::-webkit-scrollbar{width:3px;}
 .sb-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ── PROJECT CARD ── */
 .proj-item{
-  padding:10px 12px;border-radius:8px;border:1px solid transparent;
-  margin-bottom:5px;cursor:pointer;transition:all .15s;
+  border-radius:10px;border:1px solid var(--border);
+  margin-bottom:8px;cursor:pointer;overflow:hidden;
+  background:var(--white);
+  transition:all .18s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
 }
-.proj-item:hover{background:var(--bg);border-color:var(--border);}
-.proj-item.active{background:var(--blue-bg);border-color:#b8d0f8;}
-.pi-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
-.pi-desc{font-size:10px;color:var(--muted2);margin-bottom:6px;line-height:1.4;}
-.pi-dots{display:flex;gap:6px;flex-wrap:wrap;}
-.pi-dot{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--muted);}
-.dot-c{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.proj-item:hover{
+  border-color:#c5d4f0;
+  box-shadow:0 3px 14px rgba(26,95,212,.1);
+  transform:translateY(-1px);
+}
+.proj-item.active{
+  border-color:#93b4ed;
+  background:var(--blue-bg);
+  box-shadow:0 0 0 2px rgba(26,95,212,.12),0 3px 14px rgba(26,95,212,.1);
+}
+
+/* Image strip */
+.pi-img{
+  width:100%;height:82px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#e8eef8 0%,#dde5f4 100%);
+}
+.pi-img-inner{
+  width:100%;height:100%;
+  background-size:cover;background-position:center;
+  filter:brightness(.92) saturate(.85);
+  transition:transform .4s ease,filter .3s ease;
+}
+.proj-item:hover .pi-img-inner{transform:scale(1.04);filter:brightness(1) saturate(.95);}
+.pi-road-svg{position:absolute;inset:0;width:100%;height:100%;}
+
+/* Badges on image */
+.pi-route-badge{
+  position:absolute;top:7px;left:8px;
+  background:rgba(255,255,255,.88);backdrop-filter:blur(4px);
+  border:1px solid rgba(0,0,0,.1);border-radius:5px;
+  padding:2px 8px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;
+  color:var(--text);letter-spacing:.3px;
+}
+.pi-km-badge{
+  position:absolute;bottom:7px;right:8px;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(4px);
+  border:1px solid rgba(0,0,0,.08);border-radius:5px;
+  padding:2px 7px;
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  color:var(--muted);
+}
+
+/* Card body */
+.pi-body{padding:9px 11px 8px;}
+.pi-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.25;}
+.pi-desc{font-size:10px;color:var(--muted2);margin-bottom:8px;line-height:1.4;}
+.pi-status-row{display:flex;gap:4px;flex-wrap:wrap;}
+.pi-chip{
+  display:flex;align-items:center;gap:3px;
+  font-size:9px;color:var(--muted);
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:4px;padding:2px 6px;
+  font-family:'JetBrains Mono',monospace;
+}
+.chip-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+
+/* Phase badge */
+.pi-phase{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-family:'JetBrains Mono',monospace;
+  background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;
+  border-radius:4px;padding:2px 7px;margin-top:5px;
+  letter-spacing:.2px;
+}
+.pi-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 11px;border-top:1px solid var(--border);
+  background:#f8f9fc;
+}
+.proj-item.active .pi-meta{background:#e4ecfb;}
+.pi-budget{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+  color:var(--blue);
+}
+.pi-lot-count{font-size:9px;color:var(--muted2);}
+
 .sb-foot{
   padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0;
   font-size:9px;color:var(--muted2);font-family:'JetBrains Mono',monospace;line-height:1.7;
@@ -88,112 +193,114 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;color:var(-
 .leg-row{display:flex;align-items:center;gap:8px;padding:2.5px 0;font-size:11px;color:var(--text);}
 .leg-line{width:22px;height:5px;border-radius:3px;flex-shrink:0;}
 
-/* ── PANEL ── */
+/* ── PANEL — C+A design: lot-navigator + fase-bar + free scroll ── */
 .panel{
-  position:fixed;top:var(--hdr);right:0;bottom:0;width:var(--panel);z-index:900;
+  position:fixed;top:var(--ik-top,80px);right:0;bottom:0;width:var(--panel);z-index:900;
   background:var(--white);border-left:1px solid var(--border);
   display:flex;flex-direction:column;overflow:hidden;
   transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
   box-shadow:-3px 0 18px rgba(0,0,0,.07);
 }
 .panel.open{transform:translateX(0);}
+
+/* Project bar */
 .panel-projbar{
-  padding:7px 16px;background:var(--blue);flex-shrink:0;
-  font-size:10px;font-weight:600;color:rgba(255,255,255,.75);
+  padding:6px 14px;background:var(--blue);flex-shrink:0;
+  font-size:9px;font-weight:600;color:rgba(255,255,255,.75);
   letter-spacing:.5px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;
 }
+
+/* Lot header */
 .panel-hdr{
-  padding:12px 16px 10px;background:var(--bg);
+  padding:11px 14px 10px;background:var(--bg);
   border-bottom:1px solid var(--border);flex-shrink:0;
 }
 .ph-row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
-.ph-lot{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
-  letter-spacing:1.5px;margin-bottom:4px;}
-.ph-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.2;}
-.ph-km{font-size:11px;color:var(--muted);margin-top:3px;}
-.ph-badge{
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
-  padding:3px 10px;border-radius:4px;white-space:nowrap;align-self:flex-start;flex-shrink:0;
-}
+.ph-lot{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:1.5px;margin-bottom:3px;}
+.ph-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.2;}
+.ph-km{font-size:10px;color:var(--muted);margin-top:2px;}
+.ph-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:3px 9px;border-radius:4px;white-space:nowrap;align-self:flex-start;flex-shrink:0;}
 .b-done   {background:#dcfce7;color:#15803d;}
 .b-active {background:#fef9c3;color:#a16207;}
 .b-blocked{background:#fee2e2;color:#dc2626;}
 .b-planned{background:#dbeafe;color:#1d4ed8;}
 .ph-close{
-  width:26px;height:26px;border-radius:50%;border:1px solid var(--border);
-  background:var(--white);cursor:pointer;color:var(--muted2);font-size:13px;
+  width:24px;height:24px;border-radius:50%;border:1px solid var(--border);
+  background:var(--white);cursor:pointer;color:var(--muted2);font-size:12px;
   display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;
 }
 .ph-close:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
 
-/* progress */
-.ph-prog{padding:9px 16px 0;flex-shrink:0;}
-.prog-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px;}
-.prog-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+/* ── LOT NAVIGATOR (Idé C) ── */
+.lot-nav{
+  padding:9px 14px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.lot-nav-lbl{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.lot-nav-bar{display:flex;gap:3px;overflow-x:auto;padding-bottom:2px;}
+.lot-nav-bar::-webkit-scrollbar{height:2px;}
+.lot-nav-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.lot-btn{
+  flex-shrink:0;padding:4px 8px;border-radius:5px;border:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;
+  cursor:pointer;background:var(--white);color:var(--muted);
+  transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:1px;
+}
+.lot-btn:hover{border-color:var(--blue);color:var(--blue);}
+.lot-btn.active{color:var(--white);border-color:transparent;}
+.lot-btn-icon{font-size:8px;}
+
+/* ── FASE TIDSLINJE (Idé A) ── */
+.fase-section{
+  padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.fase-lbl{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);font-family:'JetBrains Mono',monospace;margin-bottom:7px;}
+.fase-bar{display:flex;gap:2px;margin-bottom:5px;}
+.fase-step{
+  flex:1;height:5px;border-radius:2px;background:var(--border);
+  transition:background .3s;
+}
+.fase-step.done{background:var(--green);}
+.fase-step.current{background:var(--blue);}
+.fase-current-lbl{font-size:10px;color:var(--blue);font-weight:600;font-family:'JetBrains Mono',monospace;}
+
+/* Progress bar */
+.ph-prog{padding:8px 14px 0;flex-shrink:0;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:3px;}
+.prog-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
 .prog-fill{height:100%;border-radius:3px;transition:width .7s ease;}
 
-/* tabs */
-.panel-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
-.tab-btn{
-  flex:1;padding:9px 0;font-size:11px;font-weight:500;text-align:center;
-  cursor:pointer;border:none;background:transparent;color:var(--muted);
-  border-bottom:2px solid transparent;transition:all .15s;font-family:'Inter',sans-serif;
-}
-.tab-btn:hover{color:var(--text);}
-.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
-
+/* ── SCROLLABLE BODY — all sections ── */
 .panel-body{flex:1;overflow-y:auto;}
 .panel-body::-webkit-scrollbar{width:3px;}
 .panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-.pane{display:none;padding:16px;}
-.pane.active{display:block;}
 
-/* info */
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:14px;}
-.ig-k{font-size:9px;text-transform:uppercase;letter-spacing:1px;
-  color:var(--muted2);font-family:'JetBrains Mono',monospace;margin-bottom:3px;}
+.section{padding:13px 14px;border-bottom:1px solid var(--border);}
+.section:last-child{border-bottom:none;}
+.section-title{
+  font-size:8px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted2);font-family:'JetBrains Mono',monospace;
+  margin-bottom:10px;
+}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 14px;}
+.ig-k{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted2);font-family:'JetBrains Mono',monospace;margin-bottom:2px;}
 .ig-v{font-size:12px;color:var(--text);font-weight:500;line-height:1.4;}
 .ig-v.money{color:var(--blue);font-weight:700;font-family:'JetBrains Mono',monospace;}
 .ig-v.firm{color:#0369a1;}
 .ig-full{grid-column:1/-1;}
-.desc-card{
-  font-size:12px;color:#475569;line-height:1.7;
-  background:var(--bg);border-radius:8px;padding:12px 13px;
-  border:1px solid var(--border);margin-bottom:12px;
-}
-.src-row{
-  font-size:10px;color:var(--muted2);padding-top:10px;
-  border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;
-}
+.desc-card{font-size:11px;color:#475569;line-height:1.7;background:var(--bg);border-radius:7px;padding:10px 12px;border:1px solid var(--border);margin-top:8px;}
+.src-row{font-size:9px;color:var(--muted2);padding-top:8px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;margin-top:8px;}
 .src-row a{color:var(--blue);text-decoration:none;}
 
-/* status tab */
-.status-card{
-  border-radius:8px;padding:13px 14px;margin-bottom:12px;
-  border:1px solid;
-}
-.sc-head{
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
-  font-family:'JetBrains Mono',monospace;margin-bottom:10px;
-  display:flex;align-items:center;gap:6px;
-}
-.sc-row{margin-bottom:8px;}
-.sc-k{font-size:9px;text-transform:uppercase;letter-spacing:.8px;
-  font-family:'JetBrains Mono',monospace;margin-bottom:2px;}
-.sc-v{font-size:11px;line-height:1.6;}
+.status-card{border-radius:8px;padding:11px 12px;margin-top:8px;border:1px solid;}
+.sc-head{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.sc-row{margin-bottom:6px;}
+.sc-k{font-size:8px;text-transform:uppercase;letter-spacing:.8px;font-family:'JetBrains Mono',monospace;margin-bottom:1px;}
+.sc-v{font-size:11px;line-height:1.5;}
 
-/* community */
-.coming-soon{
-  text-align:center;padding:36px 20px;color:var(--muted2);font-size:12px;line-height:1.9;
-}
-.cs-badge{
-  display:inline-block;background:var(--bg);border:1px solid var(--border);
-  border-radius:20px;padding:4px 14px;font-size:9px;letter-spacing:1.5px;
-  text-transform:uppercase;font-family:'JetBrains Mono',monospace;color:var(--muted2);
-  margin-bottom:12px;
-}
+.coming-soon{text-align:center;padding:28px 16px;color:var(--muted2);font-size:11px;line-height:1.9;}
+.cs-badge{display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;color:var(--muted2);margin-bottom:10px;}
 
-/* lot label */
+/* lot label on map */
 .lot-lbl-inner{
   background:rgba(255,255,255,.94);border-radius:4px;padding:2px 7px;
   font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
@@ -204,19 +311,18 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;color:var(-
 <body>
 <div id="map"></div>
 
-<div class="hdr">
-  <div class="hdr-logo">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    InfraKosova
-  </div>
-  <span class="hdr-title">Platforma Qytetare</span>
-  <span class="hdr-sub">&nbsp;·&nbsp; Transparencë Infrastrukturore</span>
-  <div class="hdr-sep"></div>
-  <span class="hdr-hint" id="hdr-hint">← Zgjidh projektin nga lista</span>
-</div>
+<div id="ik-nav"></div>
+<script src="nav.js"></script>
 
 <div class="sb">
-  <div class="sb-head">Projektet aktive</div>
+  <div class="sb-head">
+    <div class="sb-head-label">Projektet aktive</div>
+    <div class="sb-stats">
+      <div class="sb-stat"><div class="sb-stat-n" id="stat-proj">—</div><div class="sb-stat-lbl">Projekte</div></div>
+      <div class="sb-stat"><div class="sb-stat-n green" id="stat-active">—</div><div class="sb-stat-lbl">Lot aktive</div></div>
+      <div class="sb-stat"><div class="sb-stat-n red" id="stat-blocked">—</div><div class="sb-stat-lbl">Bllokuar</div></div>
+    </div>
+  </div>
   <div class="sb-body" id="sb-body"></div>
   <div class="sb-foot">
     Të dhënat: <a href="https://krpp.rks-gov.net" target="_blank">KRPP</a> ·
@@ -242,7 +348,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;color:var(-
       <div style="flex:1">
         <div class="ph-lot" id="ph-lot"></div>
         <div class="ph-name" id="ph-name"></div>
-        <div class="ph-km"  id="ph-km"></div>
+        <div class="ph-km" id="ph-km"></div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
         <button class="ph-close" id="ph-close">✕</button>
@@ -250,47 +356,32 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;color:var(-
       </div>
     </div>
   </div>
+
+  <!-- C: Lot navigator bar -->
+  <div class="lot-nav">
+    <div class="lot-nav-lbl">Të gjitha lot-et e projektit</div>
+    <div class="lot-nav-bar" id="lot-nav-bar"></div>
+  </div>
+
+  <!-- A: Fase tidslinje -->
+  <div class="fase-section">
+    <div class="fase-lbl">Faza e zbatimit</div>
+    <div class="fase-bar" id="fase-bar"></div>
+    <div class="fase-current-lbl" id="fase-current-lbl"></div>
+  </div>
+
+  <!-- Progress -->
   <div class="ph-prog" id="ph-prog" style="display:none">
-    <div class="prog-lbl"><span>Progresi</span><b id="prog-pct"></b></div>
+    <div class="prog-lbl"><span>Progresi i punimeve</span><b id="prog-pct"></b></div>
     <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
   </div>
-  <div class="panel-tabs">
-    <button class="tab-btn active" data-tab="info">Të dhënat</button>
-    <button class="tab-btn" data-tab="status">Statusi</button>
-    <button class="tab-btn" data-tab="community">Komuniteti</button>
-  </div>
-  <div class="panel-body">
-    <div class="pane active" id="pane-info"></div>
-    <div class="pane"        id="pane-status"></div>
-    <div class="pane"        id="pane-community"></div>
-  </div>
+
+  <!-- Scrollable sections — no tabs -->
+  <div class="panel-body" id="panel-body"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-// ╔═══════════════════════════════════════════════════════════════════════╗
-// ║  DATA — shto projekte të reja këtu                                    ║
-// ║  status: "done" | "active" | "blocked" | "planned"                   ║
-// ╚═══════════════════════════════════════════════════════════════════════╝
-// ═══════════════════════════════════════════════════════════════════════
-// N9 Prishtinë–Pejë · Zgjerim 4 korsi
-//
-// Dy segmente kontraktuese (8 lot gjithsej):
-//
-// SEGMENTI A: Kijevë–Dollc  (12.8 km · 21M€ · 4 lot)
-//   Autoriteti kontraktues: MMPHI
-//   Kontrata nënshkruar: 25.03.2024
-//   Punimet inauguruan: 19.04.2024 (Lot-et 2,3,4) — Lot 1 i bllokuar
-//   Burimi: Kallxo, Indeksonline, Ekonomia Online, GazetaBlic
-//
-// SEGMENTI B: Dollc–Zahaq   (16.27 km · 45.69M€ · 4 lot)
-//   Autoriteti kontraktues: MMPHI
-//   Njoftimi i tenderit: 04.07.2024  Afati: 29.07.2024  Kohëzgjatja: 36 muaj
-//   Burimi: Kallxo, Gazeta Express, Telegrafi
-//
-// Koordinatat: OSM GeoJSON rute.geojson (Pejë→Prishtinë, të ndara në 8 lot)
-// Lot-et janë renditur nga PERËNDIM (Pejë) → LINDJE (Prishtinë)
-// ═══════════════════════════════════════════════════════════════════════
 
 const PROJECTS=[
   {
@@ -300,214 +391,411 @@ const PROJECTS=[
     color:'#1a5fd4',
     lots:[
 
-      // ── SEGMENTI B, LOT 4 ─────────────────────────────────────────────
-      // Pozicioni gjeografik: Pejë qendër → Zahaq (segmenti perëndimor)
+      // ── SEGMENTI A, LOT 1 ── Kijevë hyrja → St 4+000
+      // BLLOKUAR — OSHP para nënshkrimit
       {
-        id:'n9-1', num:'B-LOT 4',
-        name:'Zahaq – Pejë qendër',
-        from:'Zahaq / Pejë hyrja (km B-12+000)',
-        to:'Pejë qendër (km B-16+270)',
-        km:'~4.3 km',
-        status:'planned', progress:0,
-        value:'10,518,000 € (vlerë e parashikuar)',
-        contractor:'Kontratë e pa-nënshkruar',
-        finance:'Buxheti i Kosovës 2025',
-        projektuar:'MMPHI / Ministria e Infrastrukturës',
-        kontrata:'E pa-nënshkruar — tender hapur 29.07.2024',
-        mbikqyrja:'I pa-kontraktuar',
-        perfundim:'2027–2028 (vlerësohet)',
-        desc:'Segmenti fundor i projektit deri në qendrën e Pejës. Lidhja me rrjetin urban të Pejës kërkon projekt urbanistik të veçantë. Sigurim tenderi i paraparë: 200,000 €.',
-        statusInfo:{type:'planned', title:'Në fazë planifikimi',rows:[
-          {k:'Statusi i prokurimit',v:'Tender i hapur që nga 04.07.2024 — kontrata e pa-nënshkruar'},
-          {k:'Sigurim tenderi',v:'200,000 € (sipas dosjes së tenderit)'},
-          {k:'Hapi tjetër',v:'Nënshkrim kontrate dhe projekt urbanistik për hyrjen e Pejës'},
-        ]},
-        sources:[{l:'Gazeta Express',u:'https://gazetaexpress.com'},{l:'KALLXO',u:'https://kallxo.com/lajm/kurti-viziton-punimet-ne-rrugen-ne-segmentin-kijeve-dollc/'}],
-        coords:[[42.65951,20.36945],[42.65943,20.36224],[42.65947,20.36193],[42.65931,20.36105],[42.6584,20.35388],[42.65842,20.34417],[42.65777,20.33614],[42.6564,20.32348],[42.65561,20.31595],[42.65547,20.31419],[42.65542,20.31371],[42.65502,20.30966],[42.65577,20.30769],[42.65669,20.30648],[42.6571,20.30632],[42.65741,20.30592],[42.66027,20.30446],[42.66043,20.30433],[42.66116,20.30114],[42.6618,20.29878],[42.66235,20.29717],[42.66244,20.29693],[42.66217,20.29631],[42.6616,20.29442],[42.66072,20.29205],[42.65982,20.28955]]
-      },
-
-      // ── SEGMENTI B, LOT 3 ─────────────────────────────────────────────
-      {
-        id:'n9-2', num:'B-LOT 3',
-        name:'Segmenti Dollc–Zahaq, Lot 3',
-        from:'Seksioni i tretë (km B-8+000)',
-        to:'Zahaq (km B-12+000)',
-        km:'~4.0 km',
-        status:'active', progress:5,
-        value:'12,515,000 € (vlerë e parashikuar)',
-        contractor:'Kontraktues i pa-konfirmuar publikisht',
-        finance:'Buxheti RKS + BEI',
-        projektuar:'MMPHI / Ministria e Infrastrukturës',
-        kontrata:'Shtator–Tetor 2024 (tender mbyllur 29.07.2024)',
-        mbikqyrja:'Mbikëqyrës i jashtëm profesional (i kontraktuar)',
-        perfundim:'Parashihet 2027 (36 muaj)',
-        desc:'Lot me vlerën kontraktuese më të lartë në segmentin Dollc–Zahaq. Sigurim tenderi: 250,000 €, që tregon kompleksitet teknik të lartë. Terrein i vështirë me reliev të ndryshueshëm.',
-        statusInfo:{type:'active', title:'Punime në fazë fillestare',rows:[
-          {k:'Sigurim tenderi',v:'250,000 € — kompleksiteti teknik i lartë'},
-          {k:'Kohëzgjatja',v:'36 muaj nga nënshkrimi i kontratës'},
-          {k:'Kontraktues',v:'Emri i kompanisë fituese nuk është konfirmuar ende nga burimet publike'},
-        ]},
-        sources:[{l:'Gazeta Express',u:'https://gazetaexpress.com'},{l:'KALLXO',u:'https://kallxo.com/lajm/kurti-viziton-punimet-ne-rrugen-ne-segmentin-kijeve-dollc/'}],
-        coords:[[42.62033,20.48316],[42.62053,20.47945],[42.62172,20.47545],[42.62322,20.46955],[42.62439,20.46264],[42.62623,20.45967],[42.62912,20.45506],[42.63127,20.45099],[42.63464,20.44753],[42.63661,20.44404],[42.63769,20.43816],[42.63863,20.42899],[42.64043,20.42449],[42.64235,20.41881],[42.64369,20.41518],[42.64671,20.41156],[42.6483,20.409],[42.64925,20.40637],[42.65341,20.40086],[42.65435,20.39931],[42.65442,20.39889],[42.65477,20.39602],[42.65496,20.39133],[42.65656,20.388],[42.65843,20.38181],[42.65951,20.36945]]
-      },
-
-      // ── SEGMENTI B, LOT 2 ─────────────────────────────────────────────
-      {
-        id:'n9-3', num:'B-LOT 2',
-        name:'Segmenti Dollc–Zahaq, Lot 2',
-        from:'Seksioni i dytë (km B-4+000)',
-        to:'Seksioni i tretë (km B-8+000)',
-        km:'~4.0 km',
-        status:'active', progress:8,
-        value:'11,970,000 € (vlerë e parashikuar)',
-        contractor:'Kontraktues i pa-konfirmuar publikisht',
-        finance:'Buxheti RKS + BEI grant teknik',
-        projektuar:'MMPHI / Ministria e Infrastrukturës',
-        kontrata:'Shtator–Tetor 2024 (tender mbyllur 29.07.2024)',
-        mbikqyrja:'Mbikëqyrës i jashtëm profesional (i kontraktuar)',
-        perfundim:'Parashihet 2027 (36 muaj)',
-        desc:'Sigurim tenderi: 220,000 €. Tender i mbyllur 29.07.2024 — kontraktorët fitues nuk janë bërë publik nga burimet e disponueshme.',
-        statusInfo:{type:'active', title:'Punime aktive',rows:[
-          {k:'Sigurim tenderi',v:'220,000 €'},
-          {k:'Kohëzgjatja',v:'36 muaj'},
-          {k:'Vërejtje',v:'Emri i kompanisë fituese nuk është konfirmuar nga burimet publike të disponueshme'},
-        ]},
-        sources:[{l:'Gazeta Express',u:'https://gazetaexpress.com'},{l:'MMPHI',u:'https://mmphi.rks-gov.net'}],
-        coords:[[42.5926,20.57658],[42.593,20.57306],[42.59256,20.56819],[42.59089,20.56261],[42.59015,20.55838],[42.59054,20.55524],[42.59208,20.55089],[42.59397,20.54341],[42.59596,20.53621],[42.59724,20.53293],[42.60015,20.52748],[42.60245,20.52218],[42.60452,20.52029],[42.60586,20.51834],[42.60656,20.51575],[42.60731,20.51377],[42.60708,20.51154],[42.60763,20.50833],[42.60924,20.50666],[42.61146,20.50409],[42.61281,20.50161],[42.61485,20.49877],[42.61632,20.49543],[42.61795,20.49042],[42.61924,20.4875],[42.62033,20.48316]]
-      },
-
-      // ── SEGMENTI B, LOT 1 ─────────────────────────────────────────────
-      // Benita sh.p.k. — konfirmuar nga Telegrafi mars 2025
-      {
-        id:'n9-4', num:'B-LOT 1',
-        name:'Dollc – Seksioni i parë',
-        from:'Dollc / Klinë jug (km B-0+000)',
-        to:'Seksioni i dytë (km B-4+000)',
-        km:'~4.0 km',
-        status:'active', progress:18,
-        value:'10,687,000 € (vlerë e parashikuar)',
-        contractor:'Benita sh.p.k.',
-        finance:'Buxheti RKS',
-        projektuar:'MMPHI / Ministria e Infrastrukturës',
-        kontrata:'Shtator 2024 (36 muaj)',
-        mbikqyrja:'Mbikëqyrës i jashtëm profesional (i kontraktuar)',
-        perfundim:'Parashihet Shtator 2027',
-        desc:'Kompania Benita sh.p.k. konfirmoi punime aktive dhe njoftoi qytetarët për ngadalësime të komunikacionit (mars 2025). Sigurim tenderi: 200,000 €.',
-        statusInfo:{type:'active', title:'Punime aktive — Benita sh.p.k.',rows:[
-          {k:'Kontraktues i konfirmuar',v:'Benita sh.p.k. (burim: Telegrafi, mars 2025)'},
-          {k:'Sigurim tenderi',v:'200,000 €'},
-          {k:'Kohëzgjatja',v:'36 muaj nga Shtator 2024'},
-        ]},
-        sources:[{l:'Telegrafi',u:'https://telegrafi.com/punime-ne-zgjerimin-e-segmentit-dollc-zahaq-kerkohet-nga-qytetaret-qe-te-tregojne-durim-dhe-mirekuptim/'},{l:'Telenews',u:'https://telenews.al/punimet-ne-segmentin-dollc-zahaq-kompania-ka-nje-lutje/'}],
-        coords:[[42.57589,20.70834],[42.57757,20.7029],[42.57893,20.69829],[42.58221,20.69383],[42.58589,20.68734],[42.58726,20.67748],[42.58943,20.66754],[42.59386,20.65928],[42.59526,20.65372],[42.5942,20.63906],[42.59477,20.63062],[42.59742,20.62495],[42.59764,20.62072],[42.59499,20.61336],[42.59701,20.6076],[42.59586,20.60505],[42.59375,20.60313],[42.59336,20.60181],[42.59302,20.5949],[42.59216,20.58949],[42.59095,20.584],[42.59196,20.57872],[42.59253,20.577],[42.59267,20.57685],[42.5926,20.57658]]
-      },
-
-      // ── SEGMENTI A, LOT 4 ─────────────────────────────────────────────
-      {
-        id:'n9-5', num:'A-LOT 4',
-        name:'Klinë qendër – Dollc',
-        from:'Klinë qendër (km A-9+500)',
-        to:'Dollc (km A-12+800)',
-        km:'~3.3 km',
-        status:'active', progress:25,
-        value:'~9,330,000 € (e llogaritur: 21M€ − Lot1 − Lot2 − Lot3)',
-        contractor:'Kontraktues i pa-konfirmuar publikisht',
-        finance:'Buxheti i Kosovës',
-        projektuar:'MMPHI / Ministria e Infrastrukturës',
-        kontrata:'25.03.2024 · Inauguruar 19.04.2024',
-        mbikqyrja:'Mbikëqyrës i jashtëm profesional (i kontraktuar)',
-        perfundim:'Parashihet 260 ditë nga inauguri (Dhjetor 2024)',
-        desc:'Lot i katërt i segmentit Kijevë–Dollc. Punimet inauguruan 19.04.2024 bashkë me Lot 2 dhe 3. Kontraktorët e Lot 4 nuk janë konfirmuar nga burimet publike të disponueshme.',
-        statusInfo:{type:'active', title:'Punime aktive',rows:[
-          {k:'Inaugurimi',v:'19.04.2024 — Kryeministri Kurti prezent'},
-          {k:'Afati kontraktual',v:'260 ditë (Lot më i gjatë) — Dhjetor 2024'},
-          {k:'Vërejtje',v:'Emri i kompanisë fituese nuk është bërë publik nga burimet e disponueshme'},
-        ]},
-        sources:[{l:'Ekonomia Online',u:'https://ekonomiaonline.com/kurti-ne-fillimin-e-punimeve-te-rruges-nacionale-kijeve-dollc-kushtoi-rreth-21-milion-euro/'},{l:'KALLXO',u:'https://kallxo.com/lajm/nisin-punimet-ne-zgjerimin-e-rruges-kijeve-dollc-jepen-zotime-se-do-te-kryhen-brenda-afatit/'}],
-        coords:[[42.56703,20.83423],[42.56543,20.83002],[42.56457,20.82845],[42.56328,20.82721],[42.56129,20.82599],[42.5576,20.82152],[42.55432,20.81692],[42.55158,20.81057],[42.55002,20.80724],[42.54633,20.80191],[42.5455,20.79673],[42.54952,20.79045],[42.55101,20.78767],[42.55407,20.78167],[42.55625,20.77962],[42.55882,20.77549],[42.56365,20.77261],[42.56493,20.76955],[42.56568,20.76267],[42.56662,20.75644],[42.5669,20.74874],[42.56895,20.73882],[42.57503,20.72326],[42.57572,20.71902],[42.57584,20.70893],[42.57589,20.70834]]
-      },
-
-      // ── SEGMENTI A, LOT 3 ─────────────────────────────────────────────
-      // Lika Trade (Deçan) + Tofi Doo (Mali i Zi) — konfirmuar
-      // Minim shkëmbinjsh Dhjetor 2024 — konfirmuar nga Ministria e Infrastrukturës
-      {
-        id:'n9-6', num:'A-LOT 3',
-        name:'Çabiq–Gllarevë – Klinë qendër',
-        from:'Çabiq / Zabërgjë (km A-5+500)',
-        to:'Klinë qendër (km A-9+500)',
-        km:'~4.0 km',
-        status:'active', progress:35,
-        value:'5,436,485 € (çmim kontrate i konfirmuar)',
-        contractor:'Lika Trade sh.p.k. (Deçan) + Tofi Doo (Rozhajë, Mali i Zi)',
-        finance:'Buxheti i Kosovës',
-        projektuar:'MMPHI / Ministria e Infrastrukturës',
-        kontrata:'25.03.2024 · Inauguruar 19.04.2024',
-        mbikqyrja:'Mbikëqyrës i jashtëm profesional (i kontraktuar)',
-        perfundim:'Parashihet 260 ditë nga inauguri',
-        desc:'Kontraktues i konfirmuar: konsorcium i Lika Trade sh.p.k. (Deçan) dhe Tofi Doo (Mali i Zi). Ministria e Infrastrukturës konfirmoi minim të tretë të shkëmbinjve në këtë lot, 04.12.2024 — punime aktive.',
-        statusInfo:{type:'active', title:'Punime aktive — minim shkëmbinjsh',rows:[
-          {k:'Kontraktues (konfirmuar)',v:'Lika Trade sh.p.k. (Deçan, KS) + Tofi Doo (Rozhajë, MNE)'},
-          {k:'Çmimi i kontratës',v:'5,436,485 € (burim: GazetaBlic, Telegrafi)'},
-          {k:'Ngjarje e fundit',v:'Minim i tretë i shkëmbinjve — 04.12.2024 (burim: Ministria e Infrastrukturës)'},
-          {k:'Inaugurimi',v:'19.04.2024 bashkë me Lot 2 dhe 4'},
-        ]},
-        sources:[{l:'MIT-ks.net',u:'https://www.mit-ks.net/en/news/neser--04122024-behet-minimi-i-trete-i-shkembinjeve-ne-rrugen-nacionale-n91-prishtine-peje--segmenti-kijeve-dollc-lot-3'},{l:'GazetaBlic',u:'https://gazetablic.com/ndahen-mbi-20-milione-euro-per-zgjerimin-e-rruges-kijeve-dollc/'},{l:'Telegrafi',u:'https://telegrafi.com/en/expansion-of-the-Kiev-Dollc-road,-more-than-20-million-euros-are-allocated-to-the-companies-that-will-carry-out-the-works/'}],
-        coords:[[42.60064,21.03496],[42.60009,21.03231],[42.6004,21.02529],[42.59897,21.02133],[42.59835,21.01755],[42.59825,21.0136],[42.59833,21.00736],[42.59737,21.00173],[42.59659,20.98843],[42.59636,20.97745],[42.59967,20.96393],[42.6026,20.95432],[42.60278,20.94962],[42.60056,20.93977],[42.59704,20.93204],[42.59234,20.92245],[42.58187,20.90111],[42.57833,20.8939],[42.5766,20.88894],[42.57557,20.87896],[42.57561,20.87288],[42.57631,20.86488],[42.57601,20.85873],[42.57306,20.853],[42.56905,20.84054],[42.56703,20.83423]]
-      },
-
-      // ── SEGMENTI A, LOT 2 ─────────────────────────────────────────────
-      // Empreus sh.p.k. — konfirmuar
-      {
-        id:'n9-7', num:'A-LOT 2',
-        name:'Kijevë / Malishevë – Çabiq',
-        from:'Kijevë / Malishevë (km A-1+900)',
-        to:'Çabiq / Zabërgjë (km A-5+500)',
-        km:'~3.6 km',
-        status:'active', progress:45,
-        value:'6,232,360 € (çmim kontrate i konfirmuar)',
-        contractor:'Empreus sh.p.k. (Prishtinë) — konsorcium',
-        finance:'Buxheti i Kosovës',
-        projektuar:'MMPHI / Ministria e Infrastrukturës',
-        kontrata:'25.03.2024 · Inauguruar 19.04.2024',
-        mbikqyrja:'Mbikëqyrës i jashtëm profesional (i kontraktuar)',
-        perfundim:'Parashihet 260 ditë nga inauguri',
-        desc:'Kontraktues i konfirmuar: Empreus sh.p.k. me bazë në Prishtinë. Punimet inauguruan 19.04.2024. Ky lot kalon nëpër zona kadastrale të komunës së Malishevës dhe Klinës.',
-        statusInfo:{type:'active', title:'Punime aktive — Empreus sh.p.k.',rows:[
-          {k:'Kontraktues (konfirmuar)',v:'Empreus sh.p.k. (Prishtinë) — konsorcium'},
-          {k:'Çmimi i kontratës',v:'6,232,360 € (burim: GazetaBlic, Paparaci)'},
-          {k:'Inaugurimi',v:'19.04.2024 — Kryeministri Kurti dhe Ministri Aliu prezent'},
-          {k:'Shpronësimet',v:'Miratuar nga Qeveria 22.11.2023 (Zona kadastrale: Çabiq, Zabërgjë, Gllarevë)'},
-        ]},
-        sources:[{l:'GazetaBlic',u:'https://gazetablic.com/ndahen-mbi-20-milione-euro-per-zgjerimin-e-rruges-kijeve-dollc/'},{l:'Paparaci',u:'https://paparaci.com/414677/jepet-tenderi-20-milionesh-per-zgjerimin-e-rruges-kijeve-dollc-punimet-fillojne-se-shpejti/'},{l:'KALLXO',u:'https://kallxo.com/lajm/nisin-punimet-ne-zgjerimin-e-rruges-kijeve-dollc-jepen-zotime-se-do-te-kryhen-brenda-afatit/'}],
-        coords:[[42.63012,21.13607],[42.62783,21.13368],[42.62643,21.13166],[42.62511,21.1295],[42.62401,21.12834],[42.62218,21.12742],[42.6204,21.12686],[42.61934,21.12557],[42.61899,21.12404],[42.61933,21.11893],[42.62076,21.09962],[42.62275,21.08855],[42.62376,21.08465],[42.62409,21.08441],[42.62426,21.08485],[42.62396,21.08505],[42.6225,21.08361],[42.61783,21.07733],[42.61575,21.07415],[42.61178,21.06829],[42.60997,21.06492],[42.60875,21.05943],[42.60841,21.05575],[42.60704,21.05242],[42.60469,21.04669],[42.60064,21.03496]]
-      },
-
-      // ── SEGMENTI A, LOT 1 ─────────────────────────────────────────────
-      // BLLOKUAR — OSHP e ktheu në ritenderim
-      {
-        id:'n9-8', num:'A-LOT 1',
-        name:'Kijevë / Malishevë — hyrja lindore',
-        from:'Kijevë hyrja (km A-0+000)',
-        to:'Km A-1+900',
-        km:'~1.9 km',
+        id:'n9-a1', num:'A-LOT 1',
+        name:'Kijevë hyrja – St 4+000',
+        from:'Kijevë / Malishevë (St 0+670)',
+        to:'St 4+000',
+        km:'~3.33 km',
         status:'blocked', progress:0,
-        value:'~9,300,000 € (e llogaritur — 21M€ minus Lot 2+3+4)',
-        contractor:'Bllokuar — OSHP e ktheu tenderin në ritenderim',
+        value:'~9,300,000 € (e llogaritur)',
+        contractor:'Bllokuar — OSHP e ktheu në ritenderim',
         finance:'Buxheti i Kosovës (i bllokuar)',
-        projektuar:'MMPHI / Ministria e Infrastrukturës',
-        kontrata:'Procedurë e bllokuar nga OSHP para nënshkrimit',
+        projektuar:'MMPHI',
+        kontrata:'Procedurë e bllokuar nga OSHP',
         mbikqyrja:'I pa-kontraktuar',
         perfundim:'I pa-caktuar — varet nga ritenderimi',
-        desc:'Ky lot u bllokua nga Organi Shqyrtues i Prokurimit (OSHP) para nënshkrimit të kontratës dhe u kthye në ritenderim. Ndërkohë Lot-et 2, 3, 4 u inauguruan 19.04.2024. Statusi aktual i ritenderimit nuk është konfirmuar nga burimet publike.',
-        statusInfo:{type:'blocked', title:'⛔ Bllokuar nga OSHP',rows:[
+        desc:'Lot i parë i segmentit Kijevë–Dollc. U bllokua nga OSHP para nënshkrimit dhe u kthye në ritenderim. Ndërkohë Lot-et 2, 3 dhe 4 u inauguruan 19.04.2024.',
+        statusInfo:{type:'blocked',title:'⛔ Bllokuar nga OSHP',rows:[
           {k:'Institucioni',v:'Organi Shqyrtues i Prokurimit (OSHP)'},
-          {k:'Vendimi',v:'OSHP e ktheu procesin e prokurimit në ritenderim para nënshkrimit të kontratës'},
-          {k:'Konfirmuar nga',v:'Kryeministri Kurti, 19.04.2024: "Për llotin e parë OSHP-ja e ka rikthyer me vendimin e vet në ritenderim, andaj ajo është spostuar ca në kohë."'},
-          {k:'Statusi aktual',v:'Ritenderimi është shpallur — rezultati nuk është konfirmuar nga burimet publike'},
-          {k:'Ndryshim nga Lot 5 (versionet e mëparshme)',v:'Ky lot është bllokuar nga OSHP (organ administrativ), jo nga Prokuroria Speciale'},
+          {k:'Vendimi',v:'Kthim në ritenderim para nënshkrimit të kontratës'},
+          {k:'Konfirmuar nga',v:'Kryeministri Kurti, 19.04.2024'},
+          {k:'Statusi aktual',v:'Ritenderimi i shpallur — rezultati i pakonfirmuar'},
         ]},
-        sources:[{l:'Ekonomia Online',u:'https://ekonomiaonline.com/kurti-ne-fillimin-e-punimeve-te-rruges-nacionale-kijeve-dollc-kushtoi-rreth-21-milion-euro/'},{l:'KALLXO',u:'https://kallxo.com/lajm/nisin-punimet-ne-zgjerimin-e-rruges-kijeve-dollc-jepen-zotime-se-do-te-kryhen-brenda-afatit/'}],
-        coords:[[42.66403,21.16426],[42.66374,21.16494],[42.66099,21.1649],[42.6579,21.16437],[42.65513,21.16403],[42.65503,21.16368],[42.65292,21.15888],[42.64938,21.15798],[42.64769,21.15721],[42.64714,21.15647],[42.64687,21.15559],[42.64632,21.15507],[42.64566,21.15579],[42.6445,21.15609],[42.64288,21.15605],[42.64069,21.15503],[42.6327,21.1509],[42.63212,21.15036],[42.63205,21.14982],[42.63131,21.14913],[42.63134,21.14743],[42.63162,21.14554],[42.63189,21.14475],[42.63191,21.14372],[42.63219,21.14108],[42.63189,21.13906],[42.63125,21.1375],[42.63012,21.13607]]
+        sources:[{l:'Ekonomia Online',u:'https://ekonomiaonline.com'},{l:'KALLXO',u:'https://kallxo.com'}],
+        prokurimi:{
+          procedure:'Procedurë e hapur',
+          announced:'25.04.2023',
+          deadline:'04.05.2023',
+          bidders:null,
+          bid_win:null,
+          bid_high:null,
+          winner:null,
+        },
+        zbatimi:{
+          start_planned:'Prill 2023',
+          start_actual:null,
+          delay_days:null,
+          last_inspection:null,
+          finance_split:'100% Buxheti i Kosovës',
+          expropriation:'Miratuar 22.11.2023 (Zona kadastrale: Kijevë, Komuna Malishevë)',
+        },
+        juridik:{
+          oshp_active:'Po',
+          oshp_count:'1',
+          retendering:'Po — OSHP ktheu në ritenderim para nënshkrimit (2023)',
+          sanctions:null,
+        },
+        coords:[[42.66403,21.16426],[42.66433,21.165],[42.66132,21.16492],[42.65919,21.16451],[42.65589,21.16416],[42.65505,21.16392],[42.65545,21.16073],[42.65553,21.15958],[42.6517,21.15856],[42.64812,21.15766],[42.64761,21.15712],[42.64714,21.15647],[42.64687,21.15559],[42.64642,21.15498],[42.6458,21.1557],[42.64484,21.15604],[42.64336,21.15614],[42.64232,21.15587],[42.63411,21.1515],[42.63228,21.15065],[42.63212,21.15009],[42.6318,21.14958],[42.6313,21.14911],[42.63134,21.14743],[42.63162,21.14554],[42.63184,21.14489],[42.63182,21.14436],[42.63218,21.14179],[42.63211,21.14006],[42.63155,21.1381],[42.6309,21.13695]]
+      },
+
+      // ── SEGMENTI A, LOT 2 ── St 4+000 → St 7+050
+      // Empreus sh.p.k. — konfirmuar · 6,232,360 € · kontrata nr. 205-23-1843-5-1-1/C408 (ose ekuiv.)
+      {
+        id:'n9-a2', num:'A-LOT 2',
+        name:'St 4+000 – St 7+050',
+        from:'St 4+000',
+        to:'St 7+050',
+        km:'~3.05 km',
+        status:'active', progress:45,
+        value:'6,232,360 €',
+        contractor:'Empreus sh.p.k. (Prishtinë) — konsorcium',
+        finance:'Buxheti i Kosovës',
+        projektuar:'MMPHI',
+        kontrata:'25.03.2024 · Inauguruar 19.04.2024',
+        mbikqyrja:'ERALD-G sh.p.k.',
+        perfundim:'Parashihet 36 muaj nga mars 2024',
+        desc:'Kontraktues i konfirmuar: Empreus sh.p.k. me bazë në Prishtinë. Vlera e kontratës: 6,232,360 €. Punimet inauguruan 19.04.2024 bashkë me Lot 3 dhe 4.',
+        statusInfo:{type:'active',title:'Punime aktive — Empreus sh.p.k.',rows:[
+          {k:'Kontraktues',v:'Empreus sh.p.k. (Prishtinë) — konsorcium'},
+          {k:'Vlera e kontratës',v:'6,232,360 €'},
+          {k:'Mbikëqyrësi',v:'ERALD-G sh.p.k.'},
+          {k:'Inaugurimi',v:'19.04.2024 — Kryeministri Kurti prezent'},
+        ]},
+        sources:[{l:'GazetaBlic',u:'https://gazetablic.com'},{l:'KALLXO',u:'https://kallxo.com'}],
+        prokurimi:{
+          procedure:'Procedurë e hapur',
+          announced:'25.04.2023',
+          deadline:'04.05.2023',
+          bidders:null,
+          bid_win:'6,232,360 €',
+          bid_high:null,
+          winner:'Empreus sh.p.k. (Prishtinë) — konsorcium',
+        },
+        zbatimi:{
+          start_planned:'Mars 2024',
+          start_actual:'19.04.2024',
+          delay_days:0,
+          last_inspection:null,
+          finance_split:'100% Buxheti i Kosovës',
+          expropriation:'Miratuar 22.11.2023 (Çabiq, Zabërgjë, Gllarevë, Komuna Klinë)',
+        },
+        juridik:{
+          oshp_active:'Jo',
+          oshp_count:'0',
+          retendering:'Jo',
+          sanctions:null,
+        },
+        coords:[[42.62974,21.1357],[42.62838,21.13432],[42.62715,21.13277],[42.626,21.13093],[42.62511,21.1295],[42.62431,21.12861],[42.62328,21.12785],[42.62187,21.12734],[42.62054,21.12694],[42.61966,21.12613],[42.61914,21.12501],[42.61898,21.12386],[42.6191,21.12181],[42.61967,21.11449],[42.62089,21.09823],[42.62227,21.09046],[42.62319,21.08678],[42.62381,21.08454],[42.62405,21.0844],[42.62426,21.08466],[42.62417,21.08501],[42.62389,21.08503],[42.62296,21.08416],[42.62111,21.08199],[42.61722,21.0764],[42.61589,21.07436],[42.61402,21.07151],[42.61097,21.06706],[42.60986,21.0646],[42.60895,21.06068]]
+      },
+
+      // ── SEGMENTI A, LOT 3 ── St 7+050 → St 10+200
+      // Lika Trade sh.p.k. + TOFI doo + Lika Company — konfirmuar nga tabela zyrtare
+      // Kontrata nr. 205-23-1843-5-1-1/C408
+      {
+        id:'n9-a3', num:'A-LOT 3',
+        name:'St 7+050 – St 10+200',
+        from:'St 7+050',
+        to:'St 10+200',
+        km:'~3.15 km',
+        status:'active', progress:35,
+        value:'5,436,485.49 €',
+        contractor:'"Lika Trade" sh.p.k. · "TOFI" doo · "Lika Company" sh.p.k.',
+        finance:'Buxheti i Kosovës',
+        projektuar:'MMPHI',
+        kontrata:'25.03.2024 · Inauguruar 19.04.2024 · Kontrata nr. 205-23-1843-5-1-1/C408',
+        mbikqyrja:'ERALD-G sh.p.k.',
+        perfundim:'Parashihet 36 muaj nga mars 2024',
+        desc:'Kontraktues i konfirmuar nga tabela zyrtare e punëve: "Lika Trade" sh.p.k., "TOFI" doo dhe "Lika Company" sh.p.k. Vlera e saktë: 5,436,485.49 €. Ministria konfirmoi minim të tretë të shkëmbinjve, 04.12.2024.',
+        statusInfo:{type:'active',title:'Punime aktive — Lika Trade / TOFI / Lika Company',rows:[
+          {k:'Kontraktues',v:'"Lika Trade" sh.p.k. · "TOFI" doo · "Lika Company" sh.p.k.'},
+          {k:'Vlera e kontratës',v:'5,436,485.49 € (konfirmuar nga tabela zyrtare)'},
+          {k:'Mbikëqyrësi',v:'ERALD-G sh.p.k.'},
+          {k:'Ngjarje e fundit',v:'Minim i tretë i shkëmbinjve — 04.12.2024'},
+        ]},
+        sources:[{l:'MIT-ks.net',u:'https://www.mit-ks.net'},{l:'GazetaBlic',u:'https://gazetablic.com'}],
+        prokurimi:{
+          procedure:'Procedurë e hapur',
+          announced:'25.04.2023',
+          deadline:'04.05.2023',
+          bidders:null,
+          bid_win:'5,436,485.49 €',
+          bid_high:null,
+          winner:'"Lika Trade" sh.p.k. · "TOFI" doo · "Lika Company" sh.p.k.',
+        },
+        zbatimi:{
+          start_planned:'Mars 2024',
+          start_actual:'19.04.2024',
+          delay_days:0,
+          last_inspection:'04.12.2024 — Minim i tretë i shkëmbinjve (konfirmuar nga Ministria)',
+          finance_split:'100% Buxheti i Kosovës',
+          expropriation:'Miratuar 22.11.2023 (Dresnik, Gremnik, Komuna Klinë)',
+        },
+        juridik:{
+          oshp_active:'Jo',
+          oshp_count:'0',
+          retendering:'Jo',
+          sanctions:null,
+        },
+        coords:[[42.60847,21.05627],[42.60815,21.0548],[42.60683,21.05198],[42.6049,21.04728],[42.60237,21.03887],[42.6002,21.03359],[42.60008,21.03187],[42.60044,21.02567],[42.59941,21.02234],[42.59861,21.02017],[42.5983,21.01662],[42.59822,21.01419],[42.5985,21.00939],[42.59796,21.00535],[42.59727,20.99885],[42.59659,20.98843],[42.59624,20.97922],[42.59714,20.97217],[42.60158,20.9587],[42.6025,20.95496],[42.6028,20.95153],[42.6026,20.94771],[42.60022,20.9389],[42.59789,20.93379],[42.5941,20.92608],[42.58908,20.91576],[42.58187,20.90111],[42.57914,20.89554],[42.57785,20.89284],[42.5765,20.8885]]
+      },
+
+      // ── SEGMENTI A, LOT 4 ── St 10+200 → St 13+403 (Dollc)
+      // Famis CO-HC sh.A. + KIT-M4 Gradnje d.o.o. + KAG-Asphalt Company sh.p.k.
+      // Kontrata nr. 205-23-1843-5-1-1/C407 · Vlera: 9,315,268.80 €
+      {
+        id:'n9-a4', num:'A-LOT 4',
+        name:'St 10+200 – Dollc (St 13+403)',
+        from:'St 10+200',
+        to:'Dollc / St 13+403',
+        km:'~3.20 km',
+        status:'active', progress:25,
+        value:'9,315,268.80 €',
+        contractor:'"Famis CO-HC" sh.A. · "KIT-M4 Gradnje" d.o.o. · "KAG-Asphalt Company" sh.p.k.',
+        finance:'Buxheti i Kosovës',
+        projektuar:'MMPHI',
+        kontrata:'25.03.2024 · Inauguruar 19.04.2024 · Kontrata nr. 205-23-1843-5-1-1/C407',
+        mbikqyrja:'ERALD-G sh.p.k.',
+        perfundim:'Parashihet 36 muaj nga mars 2024',
+        desc:'Kontraktues i konfirmuar nga tabela zyrtare dhe tabela e punimeve në terren: "Famis CO-HC" sh.A., "KIT-M4 Gradnje" d.o.o. dhe "KAG-Asphalt Company" sh.p.k. Vlera e saktë e kontratës: 9,315,268.80 €.',
+        statusInfo:{type:'active',title:'Punime aktive — Famis CO-HC / KIT-M4 / KAG',rows:[
+          {k:'Kontraktues',v:'"Famis CO-HC" sh.A. · "KIT-M4 Gradnje" d.o.o. · "KAG-Asphalt Company" sh.p.k.'},
+          {k:'Vlera e kontratës',v:'9,315,268.80 € (konfirmuar nga tabela zyrtare)'},
+          {k:'Mbikëqyrësi',v:'ERALD-G sh.p.k.'},
+          {k:'Inaugurimi',v:'19.04.2024 — Kryeministri Kurti prezent'},
+        ]},
+        sources:[{l:'KALLXO',u:'https://kallxo.com'},{l:'Paparaci',u:'https://paparaci.com'}],
+        prokurimi:{
+          procedure:'Procedurë e hapur',
+          announced:'25.04.2023',
+          deadline:'04.05.2023',
+          bidders:null,
+          bid_win:'9,315,268.80 €',
+          bid_high:null,
+          winner:'"Famis CO-HC" sh.A. · "KIT-M4 Gradnje" d.o.o. · "KAG-Asphalt Company" sh.p.k.',
+        },
+        zbatimi:{
+          start_planned:'Mars 2024',
+          start_actual:'19.04.2024',
+          delay_days:0,
+          last_inspection:null,
+          finance_split:'100% Buxheti i Kosovës',
+          expropriation:'Miratuar 22.11.2023 (Dolle, Komuna Klinë)',
+        },
+        juridik:{
+          oshp_active:'Jo',
+          oshp_count:'0',
+          retendering:'Jo',
+          sanctions:null,
+        },
+        coords:[[42.57568,20.88254],[42.5755,20.87717],[42.57561,20.87288],[42.57622,20.86868],[42.57629,20.86273],[42.5761,20.85915],[42.57566,20.85756],[42.57288,20.85264],[42.57015,20.84482],[42.56817,20.83701],[42.56756,20.83538],[42.56615,20.83201],[42.56542,20.82998],[42.56485,20.82886],[42.56415,20.82795],[42.56328,20.82721],[42.56199,20.82648],[42.5608,20.82557],[42.55939,20.82389],[42.55518,20.81835],[42.55457,20.81732],[42.55355,20.81549],[42.55119,20.80954],[42.5504,20.80785],[42.54908,20.80584],[42.54633,20.80191],[42.54557,20.79945],[42.54595,20.79483],[42.54757,20.79212],[42.55031,20.78939]]
+      },
+
+      // ── SEGMENTI B, LOT 1 ── Dollc → km B-4+070
+      // Benita Company · Asfalt Group · Arfa Group · Fortesa SHPK · Saba Belca
+      // Kontrata nënshkruar Tetor 2025 · Vlera parashikuar: 10,687,000 €
+      {
+        id:'n9-b1', num:'B-LOT 1',
+        name:'Dollc – km B-4+070',
+        from:'Dollc (km B-0+000)',
+        to:'km B-4+070',
+        km:'~4.07 km',
+        status:'active', progress:10,
+        value:'10,687,000 € (vlerë e parashikuar)',
+        contractor:'Benita Company · Asfalt Group · Arfa Group · Fortesa SHPK · Saba Belca',
+        finance:'Buxheti i Kosovës',
+        projektuar:'MMPHI',
+        kontrata:'Nënshkruar Tetor 2025 (kontrata nr. 205-24-668-5-1-1/C500 ekuiv.)',
+        mbikqyrja:'IKN sh.p.k. · ALB-Group sh.p.k.',
+        perfundim:'Parashihet 36 muaj (2028)',
+        desc:'Lot i parë i segmentit Dollc–Zahaq. Kontrata u nënshkrua Tetor 2025 bashkë me Lot 2. Grupi i operatorëve: Benita Company, Asfalt Group, Arfa Group, Fortesa SHPK dhe Saba Belca.',
+        statusInfo:{type:'active',title:'Punime aktive — Benita Company et al.',rows:[
+          {k:'Kontraktues',v:'Benita Company · Asfalt Group · Arfa Group · Fortesa SHPK · Saba Belca'},
+          {k:'Kontrata nënshkruar',v:'Tetor 2025 (bashkë me Lot 2)'},
+          {k:'Mbikëqyrësi',v:'IKN sh.p.k. · ALB-Group sh.p.k.'},
+          {k:'Vlera parashikuar',v:'10,687,000 €'},
+        ]},
+        sources:[{l:'IndeksOnline',u:'https://indeksonline.net'},{l:'Telegrafi',u:'https://telegrafi.com'}],
+        prokurimi:{
+          procedure:'Procedurë e hapur',
+          announced:'04.07.2024',
+          deadline:'29.07.2024',
+          bidders:null,
+          bid_win:'10,687,000 € (vlerë e parashikuar)',
+          bid_high:null,
+          winner:'Benita Company · Asfalt Group · Arfa Group · Fortesa SHPK · Saba Belca',
+        },
+        zbatimi:{
+          start_planned:'Tetor 2025',
+          start_actual:'Tetor 2025',
+          delay_days:0,
+          last_inspection:null,
+          finance_split:'100% Buxheti i Kosovës',
+          expropriation:null,
+        },
+        juridik:{
+          oshp_active:'Jo',
+          oshp_count:'0',
+          retendering:'Jo',
+          sanctions:null,
+        },
+        coords:[[42.55208,20.78409],[42.55515,20.78081],[42.55742,20.77765],[42.56001,20.77449],[42.56421,20.77196],[42.56481,20.76694],[42.56635,20.76039],[42.56661,20.75375],[42.56714,20.74736],[42.56916,20.73802],[42.57526,20.72233],[42.57577,20.71802],[42.57584,20.70893],[42.57594,20.70839],[42.57637,20.70652],[42.5782,20.70031],[42.57987,20.69656],[42.5839,20.69162],[42.58692,20.68283],[42.5878,20.6728],[42.59036,20.66561],[42.59423,20.6583],[42.59535,20.65294],[42.594,20.63735],[42.59512,20.62972],[42.59742,20.62495],[42.59764,20.62072],[42.59499,20.61336],[42.59701,20.6076],[42.59596,20.60513]]
+      },
+
+      // ── SEGMENTI B, LOT 2 ── km B-4+070 → km B-8+140
+      // Benita Company · Asfalt Group · Arfa Group · Fortesa SHPK · Saba Belca
+      // Kontrata nënshkruar Tetor 2025
+      {
+        id:'n9-b2', num:'B-LOT 2',
+        name:'km B-4+070 – km B-8+140',
+        from:'km B-4+070',
+        to:'km B-8+140',
+        km:'~4.07 km',
+        status:'active', progress:8,
+        value:'11,970,000 € (vlerë e parashikuar)',
+        contractor:'Benita Company · Asfalt Group · Arfa Group · Fortesa SHPK · Saba Belca',
+        finance:'Buxheti i Kosovës + BEI',
+        projektuar:'MMPHI',
+        kontrata:'Nënshkruar Tetor 2025',
+        mbikqyrja:'IKN sh.p.k. · ALB-Group sh.p.k.',
+        perfundim:'Parashihet 36 muaj (2028)',
+        desc:'Lot i dytë i segmentit Dollc–Zahaq. Kontrata u nënshkrua Tetor 2025 bashkë me Lot 1. I njëjti konsorcium kontraktues si Lot 1.',
+        statusInfo:{type:'active',title:'Punime aktive — Benita Company et al.',rows:[
+          {k:'Kontraktues',v:'Benita Company · Asfalt Group · Arfa Group · Fortesa SHPK · Saba Belca'},
+          {k:'Kontrata nënshkruar',v:'Tetor 2025 (bashkë me Lot 1)'},
+          {k:'Vlera parashikuar',v:'11,970,000 €'},
+        ]},
+        sources:[{l:'IndeksOnline',u:'https://indeksonline.net'},{l:'KALLXO',u:'https://kallxo.com'}],
+        prokurimi:{
+          procedure:'Procedurë e hapur',
+          announced:'04.07.2024',
+          deadline:'29.07.2024',
+          bidders:null,
+          bid_win:'9,244,309.90 €',
+          bid_high:null,
+          winner:'KOSOVA ASFALT · EL-BAU · GERLICA COMPANY · AVAG GROUP · ASFALT CORP. · UDHA',
+        },
+        zbatimi:{
+          start_planned:'Tetor 2025',
+          start_actual:'Tetor 2025',
+          delay_days:0,
+          last_inspection:null,
+          finance_split:'Buxheti i Kosovës + BEI',
+          expropriation:null,
+        },
+        juridik:{
+          oshp_active:'Jo',
+          oshp_count:'0',
+          retendering:'Jo',
+          sanctions:null,
+        },
+        coords:[[42.59382,20.60329],[42.59339,20.60197],[42.59329,20.59902],[42.59306,20.59536],[42.59222,20.5897],[42.59112,20.58443],[42.59129,20.58122],[42.59244,20.57712],[42.59261,20.57695],[42.59266,20.57673],[42.59259,20.57646],[42.59298,20.57125],[42.59198,20.56606],[42.59055,20.56133],[42.59017,20.55746],[42.59054,20.55524],[42.59208,20.55089],[42.59397,20.54341],[42.59596,20.53621],[42.59724,20.53293],[42.60004,20.52779],[42.60206,20.52285],[42.60411,20.52049],[42.60574,20.5188],[42.60646,20.51602],[42.60725,20.51422],[42.60721,20.5124],[42.60724,20.50926],[42.60882,20.50699],[42.61091,20.50502]]
+      },
+
+      // ── SEGMENTI B, LOT 3 ── km B-8+140 → km B-12+210
+      // PRO&CO GROUP + ARLINDI + BERISHA COMPANY — nga OSHP lista e rekomanduar
+      // 5 ankesa aktive në OSHP — status i paqartë
+      {
+        id:'n9-b3', num:'B-LOT 3',
+        name:'km B-8+140 – km B-12+210',
+        from:'km B-8+140',
+        to:'km B-12+210',
+        km:'~4.07 km',
+        status:'blocked', progress:0,
+        value:'10,620,889.43 € (oferta fituese)',
+        contractor:'PRO&CO GROUP · ARLINDI · BERISHA COMPANY (të rekomanduar)',
+        finance:'Buxheti i Kosovës + BEI',
+        projektuar:'MMPHI',
+        kontrata:'E bllokuar — 5 ankesa aktive në OSHP (nga tetor 2025)',
+        mbikqyrja:'I pa-kontraktuar',
+        perfundim:'I pa-caktuar — varet nga OSHP',
+        desc:'Ky lot është bllokuar nga ankesa të shumta në OSHP nga kompani që nuk kanë fituar tenderin. Sipas burimeve, 5 ankesa aktive bllokojnë nënshkrimin e kontratës. Operatorët e rekomanduar: PRO&CO GROUP, ARLINDI, BERISHA COMPANY me ofertë 10,620,889.43 €.',
+        statusInfo:{type:'blocked',title:'⛔ Bllokuar — 5 ankesa në OSHP',rows:[
+          {k:'Institucioni',v:'Organi Shqyrtues i Prokurimit (OSHP)'},
+          {k:'Ankesa aktive',v:'5 ankesa nga kompani humbëse (nga tetor 2025)'},
+          {k:'Operatori i rekomanduar',v:'PRO&CO GROUP · ARLINDI · BERISHA COMPANY'},
+          {k:'Oferta fituese',v:'10,620,889.43 €'},
+          {k:'Vlerësim',v:'Sabotim i prokurimit — kompani pa ofertë konkurruese po bllokojnë projektin'},
+        ]},
+        sources:[{l:'KALLXO',u:'https://kallxo.com'},{l:'Gazeta Express',u:'https://gazetaexpress.com'}],
+        prokurimi:{
+          procedure:'Procedurë e hapur',
+          announced:'04.07.2024',
+          deadline:'29.07.2024',
+          bidders:null,
+          bid_win:'10,620,889.43 €',
+          bid_high:null,
+          winner:'PRO&CO GROUP · ARLINDI · BERISHA COMPANY (të rekomanduar — kontratë e pa-nënshkruar)',
+        },
+        zbatimi:{
+          start_planned:'Tetor 2025',
+          start_actual:null,
+          delay_days:null,
+          last_inspection:null,
+          finance_split:'Buxheti i Kosovës + BEI',
+          expropriation:null,
+        },
+        juridik:{
+          oshp_active:'Po',
+          oshp_count:'5',
+          retendering:'Jo (ende në procedurë fillestare)',
+          sanctions:null,
+        },
+        coords:[[42.61224,20.50257],[42.61397,20.50004],[42.61575,20.49702],[42.61697,20.49327],[42.61844,20.48926],[42.61978,20.48607],[42.62035,20.48288],[42.62065,20.47887],[42.62193,20.47472],[42.62341,20.46827],[42.62451,20.46227],[42.62674,20.4591],[42.62949,20.45411],[42.63181,20.4504],[42.63513,20.44705],[42.63661,20.44404],[42.63769,20.43816],[42.63863,20.42899],[42.64043,20.42449],[42.64235,20.41881],[42.64359,20.4155],[42.64616,20.41204],[42.64828,20.40908],[42.64916,20.40647],[42.65287,20.4015],[42.65426,20.39935],[42.6544,20.39921],[42.65463,20.39805],[42.65463,20.39318],[42.65517,20.39072]]
+      },
+
+      // ── SEGMENTI B, LOT 4 ── km B-12+210 → Zahaq (km B-16+270)
+      // Lika Trade sh.p.k. + Lika Company sh.p.k. — konfirmuar
+      // Kontrata nr. 205-24-668-5-1-1/C500 · Data: 09.07.2025 · Vlera: 8,843,292.10 €
+      {
+        id:'n9-b4', num:'B-LOT 4',
+        name:'km B-12+210 – Zahaq',
+        from:'km B-12+210',
+        to:'Zahaq / Pejë hyrja (km B-16+270)',
+        km:'~4.06 km',
+        status:'active', progress:5,
+        value:'8,843,292.10 €',
+        contractor:'"Lika Trade" sh.p.k. · "Lika Company" sh.p.k.',
+        finance:'Buxheti i Kosovës',
+        projektuar:'MMPHI',
+        kontrata:'09.07.2025 · Kontrata nr. 205-24-668-5-1-1/C500',
+        mbikqyrja:'"Instituti i Konsulencës në Ndërtim IKN" sh.p.k. · "ALB-Group" sh.p.k.',
+        perfundim:'Parashihet 36 muaj nga korrik 2025',
+        desc:'Lot i fundit i segmentit Dollc–Zahaq. Kontrata nënshkruar 09.07.2025. Punëkryesit: "Lika Trade" sh.p.k. dhe "Lika Company" sh.p.k. Mbikëqyrja: IKN sh.p.k. dhe ALB-Group sh.p.k. Numri i tenderëve të pranuar: 25; i përgjithshëm: 9.',
+        statusInfo:{type:'active',title:'Punime aktive — Lika Trade / Lika Company',rows:[
+          {k:'Kontraktues',v:'"Lika Trade" sh.p.k. · "Lika Company" sh.p.k.'},
+          {k:'Vlera e kontratës',v:'8,843,292.10 € (konfirmuar nga dokumenti zyrtar)'},
+          {k:'Data e nënshkrimit',v:'09.07.2025'},
+          {k:'Mbikëqyrësi',v:'IKN sh.p.k. · ALB-Group sh.p.k.'},
+          {k:'Nr. kontratës',v:'205-24-668-5-1-1/C500'},
+        ]},
+        sources:[{l:'KRPP',u:'https://krpp.rks-gov.net'},{l:'Gazeta Express',u:'https://gazetaexpress.com'}],
+        prokurimi:{
+          procedure:'Procedurë e hapur',
+          announced:'04.07.2024',
+          deadline:'29.07.2024',
+          bidders:'25 të pranuar · 9 të përgjithshëm',
+          bid_win:'8,843,292.10 €',
+          bid_high:'10,505,353.96 €',
+          winner:'"Lika Trade" sh.p.k. · "Lika Company" sh.p.k.',
+        },
+        zbatimi:{
+          start_planned:'Korrik 2025',
+          start_actual:'Korrik 2025',
+          delay_days:0,
+          last_inspection:null,
+          finance_split:'100% Buxheti i Kosovës',
+          expropriation:null,
+        },
+        juridik:{
+          oshp_active:'Jo',
+          oshp_count:'0',
+          retendering:'Jo',
+          sanctions:null,
+        },
+        coords:[[42.6571,20.38694],[42.65866,20.37955],[42.65958,20.36739],[42.65944,20.36211],[42.65947,20.3619],[42.65935,20.36145],[42.6585,20.35519],[42.65846,20.34571],[42.65794,20.33789],[42.65687,20.32804],[42.65573,20.31706],[42.65545,20.31445],[42.65551,20.31395],[42.65534,20.3135],[42.65512,20.30906],[42.65623,20.30693],[42.65684,20.30638],[42.65713,20.30629],[42.65741,20.30592],[42.66025,20.30445],[42.66041,20.30441],[42.66043,20.30372],[42.6617,20.29915],[42.66216,20.29743],[42.66245,20.2971],[42.66237,20.29688],[42.66204,20.29588],[42.66147,20.294],[42.66061,20.29182],[42.65982,20.28955]]
       }
     ]
   },
@@ -531,13 +819,12 @@ const PROJECTS=[
        status:'done',progress:100,value:'9,000,000 €',
        contractor:'Bami sh.p.k.',finance:'Buxheti i Kosovës 2021',
        projektuar:'MMPHI',kontrata:'Prill 2021',mbikqyrja:'Supervizion i kontraktuar',perfundim:'Janar 2022',
-       desc:'Rikonstruktim i plotë i shtresës asfaltike dhe sinjalizimit. Projekt i finalizuar brenda afatit kontraktual.',
+       desc:'Rikonstruktim i plotë i shtresës asfaltike dhe sinjalizimit.',
        statusInfo:null,
        sources:[{l:'MMPHI',u:'https://mmphi.rks-gov.net'}],
        coords:[[42.812,20.965],[42.834,20.949],[42.854,20.933],[42.872,20.918],[42.888,20.905]]}
     ]
   }
-  // ← SHTO PROJEKT TË RI KËTU
 ];
 
 // ╔═══════════════════════════════════════════════════════════════════════╗
@@ -569,18 +856,118 @@ lmap.fitBounds([[41.85,20.01],[43.27,21.79]],{padding:[18,18]});
 let activeProj=null,activeLot=null;
 const LAYERS={};
 
+// Project metadata (budget, km, SVG illustration config)
+const PROJ_META = {
+  n9: {
+    budget: '~134,000,000 €',
+    totalKm: '~29 km',
+    region: 'Prishtinë → Pejë',
+    img: null,
+    accent: '#1a5fd4',
+    phase: 5,
+    svgPath: 'M8,58 C28,56 22,34 52,30 C82,26 76,50 106,46 C136,42 130,20 162,17 C194,14 188,38 218,35 C242,32 252,18 268,15'
+  },
+  n2: {
+    budget: '~18,400,000 €',
+    totalKm: '~47.8 km',
+    region: 'Prishtinë → Mitrovicë',
+    img: null,
+    accent: '#7c3aed',
+    phase: 7,
+    svgPath: 'M8,52 C38,52 34,26 68,22 C102,18 98,44 132,40 C166,36 162,16 196,14 C230,12 226,40 260,36'
+  }
+};
+
+const PHASES = [
+  null,
+  'Planifikim & Projektim',
+  'Shpronësimi',
+  'Prokurimi Publik',
+  'Nënshkrimi i Kontratës',
+  'Zbatimi (Ndërtimi)',
+  'Pranimi Teknik',
+  'Hapja & Garancia',
+];
+
+function makeSVG(accent, pathD) {
+  const light = accent + '22';
+  const mid   = accent + '55';
+  return `<svg class="pi-road-svg" viewBox="0 0 276 82" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="g${accent.replace('#','')}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="${accent}" stop-opacity="0.13"/>
+        <stop offset="100%" stop-color="${accent}" stop-opacity="0.03"/>
+      </linearGradient>
+    </defs>
+    <rect width="276" height="82" fill="url(#g${accent.replace('#','')})"/>
+    <line x1="0" y1="20" x2="276" y2="20" stroke="${accent}" stroke-opacity=".05" stroke-width="1"/>
+    <line x1="0" y1="41" x2="276" y2="41" stroke="${accent}" stroke-opacity=".05" stroke-width="1"/>
+    <line x1="0" y1="62" x2="276" y2="62" stroke="${accent}" stroke-opacity=".05" stroke-width="1"/>
+    <line x1="55" y1="0" x2="55" y2="82" stroke="${accent}" stroke-opacity=".04" stroke-width="1"/>
+    <line x1="138" y1="0" x2="138" y2="82" stroke="${accent}" stroke-opacity=".04" stroke-width="1"/>
+    <line x1="221" y1="0" x2="221" y2="82" stroke="${accent}" stroke-opacity=".04" stroke-width="1"/>
+    <path d="${pathD}" fill="none" stroke="${accent}" stroke-width="10" stroke-linecap="round" opacity="0.08"/>
+    <path d="${pathD}" fill="none" stroke="${accent}" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+    <path d="${pathD}" fill="none" stroke="white" stroke-width="0.9" stroke-dasharray="5,5" stroke-linecap="round" opacity="0.6"/>
+    <circle cx="8" cy="58" r="4" fill="${accent}" opacity="0.8"/>
+    <circle cx="8" cy="58" r="7" fill="${accent}" opacity="0.15"/>
+  </svg>`;
+}
+
 // Sidebar
 function buildSidebar(){
-  const el=document.getElementById('sb-body');el.innerHTML='';
-  PROJECTS.forEach(proj=>{
-    const c={done:0,active:0,blocked:0,planned:0};
-    proj.lots.forEach(l=>c[l.status]++);
-    const dots=Object.entries(c).filter(([,n])=>n>0)
-      .map(([s,n])=>`<span class="pi-dot"><span class="dot-c" style="background:${SC[s].color}"></span>${n}</span>`).join('');
-    const item=document.createElement('div');
-    item.className='proj-item';item.id=`pi-${proj.id}`;
-    item.innerHTML=`<div class="pi-name">${proj.name}</div><div class="pi-desc">${proj.desc}</div><div class="pi-dots">${dots}</div>`;
-    item.addEventListener('click',()=>openProject(proj.id));
+  const el = document.getElementById('sb-body');
+  el.innerHTML = '';
+
+  let totalActive = 0, totalBlocked = 0;
+  PROJECTS.forEach(p => p.lots.forEach(l => {
+    if(l.status==='active')  totalActive++;
+    if(l.status==='blocked') totalBlocked++;
+  }));
+  document.getElementById('stat-proj').textContent    = PROJECTS.length;
+  document.getElementById('stat-active').textContent  = totalActive;
+  document.getElementById('stat-blocked').textContent = totalBlocked;
+
+  const chipLabel = {done:'✓ Kryer', active:'⚙ Aktiv', blocked:'⛔ Bllok.', planned:'◷ Plan.'};
+  const chipColor = {done:getComputedStyle(document.documentElement).getPropertyValue('--green').trim(),
+                     active:getComputedStyle(document.documentElement).getPropertyValue('--yellow').trim(),
+                     blocked:getComputedStyle(document.documentElement).getPropertyValue('--red').trim(),
+                     planned:getComputedStyle(document.documentElement).getPropertyValue('--planned').trim()};
+
+  PROJECTS.forEach(proj => {
+    const meta = PROJ_META[proj.id] || {budget:'—',totalKm:'—',region:'',accent:proj.color,svgPath:'M8,41 L268,41'};
+    const c = {done:0,active:0,blocked:0,planned:0};
+    proj.lots.forEach(l => c[l.status]++);
+
+    const chips = Object.entries(c).filter(([,n])=>n>0).map(([s,n])=>`
+      <span class="pi-chip">
+        <span class="chip-dot" style="background:${chipColor[s]||'#999'}"></span>${n} ${chipLabel[s]}
+      </span>`).join('');
+
+    const imgArea = meta.img
+      ? `<div class="pi-img-inner" style="background-image:url('${meta.img}')"></div>`
+      : makeSVG(meta.accent, meta.svgPath);
+
+    const item = document.createElement('div');
+    item.className = 'proj-item';
+    item.id = `pi-${proj.id}`;
+    item.innerHTML = `
+      <div class="pi-img">
+        ${imgArea}
+        <span class="pi-route-badge">${proj.name.split('·')[0].trim()}</span>
+        <span class="pi-km-badge">${meta.totalKm}</span>
+      </div>
+      <div class="pi-body">
+        <div class="pi-name">${proj.name.split('·').slice(1).join('·').trim() || proj.name}</div>
+        <div class="pi-desc">${meta.region} &nbsp;·&nbsp; ${proj.lots.length} lot-e</div>
+        ${meta.phase ? `<div class="pi-phase">⚙ Faza ${meta.phase} · ${PHASES[meta.phase]}</div>` : ''}
+        <div class="pi-status-row" style="margin-top:7px">${chips}</div>
+      </div>
+      <div class="pi-meta">
+        <span class="pi-budget">${meta.budget}</span>
+        <span class="pi-lot-count">${proj.lots.length} lot-e</span>
+      </div>`;
+    item.addEventListener('click', () => openProject(proj.id));
     el.appendChild(item);
   });
 }
@@ -628,15 +1015,16 @@ function openProject(projId){
   });
   const all=proj.lots.flatMap(l=>l.coords);
   lmap.flyToBounds(L.latLngBounds(all),{padding:[60,90],duration:.85});
-  document.getElementById('hdr-hint').textContent='↓ Kliko mbi një lot';
 }
 
-// Select lot
+// Select lot — C+A: lot navigator + fase tidslinje + fri scroll
 function selectLot(projId,lotId){
   activeLot=lotId;
   const proj=PROJECTS.find(p=>p.id===projId);
   const lot=proj.lots.find(l=>l.id===lotId);
   const cfg=SC[lot.status];
+
+  // Highlight on map
   Object.entries(LAYERS[projId].lots).forEach(([lid,ll])=>{
     const sel=lid===lotId;
     ll.line.setStyle({weight:sel?11:4,opacity:sel?1:.22});
@@ -644,12 +1032,42 @@ function selectLot(projId,lotId){
   });
   lmap.flyToBounds(L.latLngBounds(lot.coords),{padding:[70,415],duration:.65,maxZoom:12});
 
+  // Header
   document.getElementById('panel-projbar').textContent=proj.name;
   const pl=document.getElementById('ph-lot');pl.textContent=lot.num;pl.style.color=cfg.color;
   document.getElementById('ph-name').textContent=lot.name;
   document.getElementById('ph-km').textContent=`${lot.from} → ${lot.to}`;
   const badge=document.getElementById('ph-badge');badge.textContent=cfg.label;badge.className=`ph-badge ${cfg.cls}`;
 
+  // ── C: Lot navigator ──
+  const navBar=document.getElementById('lot-nav-bar');
+  navBar.innerHTML='';
+  const statusIcon={done:'✓',active:'⚙',blocked:'⛔',planned:'◷'};
+  proj.lots.forEach(l=>{
+    const sc=SC[l.status];
+    const btn=document.createElement('button');
+    btn.className='lot-btn'+(l.id===lotId?' active':'');
+    if(l.id===lotId) btn.style.background=sc.color;
+    btn.innerHTML=`<span>${l.num.replace('LOT ','')}</span><span class="lot-btn-icon">${statusIcon[l.status]}</span>`;
+    btn.title=l.name;
+    btn.addEventListener('click',()=>selectLot(projId,l.id));
+    navBar.appendChild(btn);
+  });
+
+  // ── A: Fase tidslinje ──
+  const meta=PROJ_META[projId]||{phase:5};
+  const faseBar=document.getElementById('fase-bar');
+  faseBar.innerHTML='';
+  for(let i=1;i<=7;i++){
+    const s=document.createElement('div');
+    s.className='fase-step'+(i<meta.phase?' done':i===meta.phase?' current':'');
+    s.title=PHASES[i];
+    faseBar.appendChild(s);
+  }
+  document.getElementById('fase-current-lbl').textContent=
+    meta.phase ? `Faza ${meta.phase} · ${PHASES[meta.phase]}` : '';
+
+  // Progress bar
   const pg=document.getElementById('ph-prog');
   if(lot.status!=='planned'){
     pg.style.display='block';
@@ -657,63 +1075,92 @@ function selectLot(projId,lotId){
     const pf=document.getElementById('prog-fill');pf.style.width=`${lot.progress}%`;pf.style.background=cfg.color;
   } else pg.style.display='none';
 
-  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.toggle('active',t.dataset.tab==='info'));
-  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-info'));
-
-  // Info tab
+  // ── Free-scroll sections ──
+  const missing='<span style="color:#dc2626;font-style:italic;font-weight:400">Të dhëna mungojnë</span>';
+  const val=v=>(v&&v!=='—')?v:missing;
+  const valMoney=v=>(v&&v!=='—')?`<span class="ig-v money">${v}</span>`:missing;
+  const valFirm=v=>(v&&v!=='—')?`<span class="ig-v firm">${v}</span>`:missing;
   const src=(lot.sources||[]).map(s=>`<a href="${s.u}" target="_blank">${s.l}</a>`).join(' · ');
-  document.getElementById('pane-info').innerHTML=`
-    <div class="info-grid">
-      <div><div class="ig-k">Gjatësia</div><div class="ig-v">${lot.km}</div></div>
-      <div><div class="ig-k">Vlera</div><div class="ig-v money">${lot.value}</div></div>
-      <div class="ig-full"><div class="ig-k">Kontraktuesi</div><div class="ig-v firm">${lot.contractor}</div></div>
-      <div><div class="ig-k">Financimi</div><div class="ig-v">${lot.finance}</div></div>
-      <div class="ig-full"><div class="ig-k">Projektuar nga</div><div class="ig-v">${lot.projektuar||'—'}</div></div>
-      <div><div class="ig-k">Nënshkruar</div><div class="ig-v">${lot.kontrata}</div></div>
-      <div><div class="ig-k">Afati</div><div class="ig-v">${lot.perfundim}</div></div>
-      <div class="ig-full"><div class="ig-k">Mbikëqyrja</div><div class="ig-v">${lot.mbikqyrja||'—'}</div></div>
-    </div>
-    <div class="desc-card">${lot.desc}</div>
-    <div class="src-row">Burimet: ${src}</div>`;
-
-  // Status tab
+  const p=lot.prokurimi||{};
+  const z=lot.zbatimi||{};
+  const jur=lot.juridik||{};
   const si=lot.statusInfo;
-  if(!si){
-    document.getElementById('pane-status').innerHTML=`<div class="desc-card">Nuk ka të dhëna shtesë mbi statusin e këtij loti.</div>`;
-  } else {
-    const cmap={blocked:'#dc2626',active:'#d97706',done:'#16a34a',planned:'#2563eb'};
-    const col=cmap[si.type]||'#6b7a99';
-    document.getElementById('pane-status').innerHTML=`
-      <div class="status-card" style="border-color:${col}44;background:${col}08">
+  const vonesa=(z.delay_days&&z.delay_days>0)
+    ?`<span style="color:#dc2626;font-weight:600">+${z.delay_days} ditë vonesë</span>`
+    :(z.delay_days===0?'<span style="color:#16a34a">Në kohë</span>':missing);
+  const cmap={blocked:'#dc2626',active:'#d97706',done:'#16a34a',planned:'#2563eb'};
+  const col=si?cmap[si.type]||'#6b7a99':null;
+
+  document.getElementById('panel-body').innerHTML=`
+
+    <div class="section">
+      <div class="section-title">Kontrata</div>
+      <div class="info-grid">
+        <div><div class="ig-k">Gjatësia</div><div class="ig-v">${val(lot.km)}</div></div>
+        <div><div class="ig-k">Vlera e kontratës</div>${valMoney(lot.value)}</div>
+        <div class="ig-full"><div class="ig-k">Punëkryesi</div>${valFirm(lot.contractor)}</div>
+        <div class="ig-full"><div class="ig-k">Mbikëqyrësi</div><div class="ig-v">${val(lot.mbikqyrja)}</div></div>
+        <div><div class="ig-k">Financimi</div><div class="ig-v">${val(lot.finance)}</div></div>
+        <div><div class="ig-k">Autoriteti</div><div class="ig-v">${val(lot.projektuar)}</div></div>
+        <div class="ig-full"><div class="ig-k">Kontrata · Data</div><div class="ig-v">${val(lot.kontrata)}</div></div>
+        <div class="ig-full"><div class="ig-k">Afati i përfundimit</div><div class="ig-v">${val(lot.perfundim)}</div></div>
+      </div>
+      <div class="desc-card">${lot.desc||missing}</div>
+      <div class="src-row">Burimet: ${src||missing}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Prokurimi</div>
+      <div class="info-grid">
+        <div class="ig-full"><div class="ig-k">Procedura</div><div class="ig-v">${val(p.procedure)}</div></div>
+        <div><div class="ig-k">Shpallja</div><div class="ig-v">${val(p.announced)}</div></div>
+        <div><div class="ig-k">Afati ofertave</div><div class="ig-v">${val(p.deadline)}</div></div>
+        <div><div class="ig-k">Nr. ofertuesve</div><div class="ig-v">${val(p.bidders)}</div></div>
+        <div><div class="ig-k">Oferta fituese</div><div class="ig-v money">${val(p.bid_win)}</div></div>
+        <div><div class="ig-k">Oferta më e lartë</div><div class="ig-v">${val(p.bid_high)}</div></div>
+        <div class="ig-full"><div class="ig-k">Operatori fitues</div>${valFirm(p.winner)}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Zbatimi</div>
+      <div class="info-grid">
+        <div><div class="ig-k">Fillimi i planifikuar</div><div class="ig-v">${val(z.start_planned)}</div></div>
+        <div><div class="ig-k">Fillimi faktik</div><div class="ig-v">${val(z.start_actual)}</div></div>
+        <div class="ig-full"><div class="ig-k">Vonesa</div><div class="ig-v">${vonesa}</div></div>
+        <div class="ig-full"><div class="ig-k">Inspektimi i fundit</div><div class="ig-v">${val(z.last_inspection)}</div></div>
+        <div class="ig-full"><div class="ig-k">Ndarja e financimit</div><div class="ig-v">${val(z.finance_split)}</div></div>
+        <div class="ig-full"><div class="ig-k">Shpronësimi</div><div class="ig-v">${val(z.expropriation)}</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Statusi juridik</div>
+      <div class="info-grid" style="margin-bottom:10px">
+        <div><div class="ig-k">Ankesa aktive OSHP</div><div class="ig-v">${val(jur.oshp_active)}</div></div>
+        <div><div class="ig-k">Nr. ankesave</div><div class="ig-v">${val(jur.oshp_count)}</div></div>
+        <div class="ig-full"><div class="ig-k">Ritenderime</div><div class="ig-v">${val(jur.retendering)}</div></div>
+        <div class="ig-full"><div class="ig-k">Sanksione / gjoba</div><div class="ig-v">${val(jur.sanctions)}</div></div>
+      </div>
+      ${si?`<div class="status-card" style="border-color:${col}44;background:${col}08">
         <div class="sc-head" style="color:${col}">${si.title}</div>
         ${si.rows.map(r=>`<div class="sc-row"><div class="sc-k" style="color:${col}">${r.k}</div><div class="sc-v" style="color:${si.type==='blocked'?'#7f1d1d':'var(--text)'}">${r.v}</div></div>`).join('')}
-      </div>`;
-  }
+      </div>`:''}
+    </div>
 
-  // Community tab
-  document.getElementById('pane-community').innerHTML=`
-    <div class="coming-soon">
-      <div class="cs-badge">Së shpejti · Faza 1</div><br/>
-      Funksioni i komenteve, raportimeve qytetare<br/>
-      dhe shtimit të lidhjeve do aktivizohet<br/>
-      në Q2 2026.
+    <div class="section">
+      <div class="section-title">Komuniteti</div>
+      <div class="coming-soon">
+        <div class="cs-badge">Së shpejti · Faza 1</div><br/>
+        Komente · raporte qytetare · lidhje<br/>
+        aktivizohen në Q2 2026.
+      </div>
     </div>`;
 
   document.getElementById('panel').classList.add('open');
-  document.getElementById('hdr-hint').textContent='← Kliko tjetër lot';
 }
 
-// Tabs
-document.querySelectorAll('.tab-btn').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById(`pane-${t.dataset.tab}`).classList.add('active');
-  });
-});
-
-// Close
+// Close panel
 document.getElementById('ph-close').addEventListener('click',()=>{
   activeLot=null;
   document.getElementById('panel').classList.remove('open');
@@ -722,7 +1169,6 @@ document.getElementById('ph-close').addEventListener('click',()=>{
       ll.line.setStyle({weight:6,opacity:.92});ll.glow.setStyle({opacity:.12});
     });
   }
-  document.getElementById('hdr-hint').textContent='↓ Kliko mbi një lot';
 });
 
 buildSidebar();

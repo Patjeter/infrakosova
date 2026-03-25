@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InfraKosova · FAQ — Si funksionon një projekt rrugor?</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f2f4f7;--white:#fff;--border:#dde3ec;
+  --text:#18243a;--muted:#6b7a99;--muted2:#9aaccc;
+  --blue:#1a5fd4;--blue-bg:#eaf1fd;
+  --green:#16a34a;--yellow:#d97706;--red:#dc2626;
+  --phase-colors:
+    /* 1 */ #e0f2fe,#0369a1,
+    /* 2 */ #ede9fe,#6d28d9,
+    /* 3 */ #fee2e2,#dc2626,
+    /* 4 */ #dcfce7,#15803d,
+    /* 5 */ #fef9c3,#a16207,
+    /* 6 */ #f1f5f9,#475569,
+    /* 7 */ #d1fae5,#065f46;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Inter',sans-serif;color:var(--text);
+  background:var(--bg);min-height:100vh;
+}
+
+/* ── PAGE ── */
+.page{max-width:720px;margin:0 auto;padding:40px 24px 80px;margin-top:80px;}
+
+.page-eyebrow{
+  font-size:9px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--muted2);font-family:'JetBrains Mono',monospace;
+  margin-bottom:10px;
+}
+.page-title{
+  font-size:28px;font-weight:700;color:var(--text);
+  line-height:1.2;margin-bottom:10px;
+}
+.page-sub{
+  font-size:14px;color:var(--muted);line-height:1.7;
+  margin-bottom:36px;max-width:560px;
+}
+
+/* ── PHASE TIMELINE BAR ── */
+.timeline{
+  display:flex;gap:0;margin-bottom:40px;
+  border-radius:10px;overflow:hidden;border:1px solid var(--border);
+}
+.tl-step{
+  flex:1;padding:8px 6px;text-align:center;cursor:pointer;
+  transition:all .15s;border-right:1px solid var(--border);
+  position:relative;
+}
+.tl-step:last-child{border-right:none;}
+.tl-step:hover{filter:brightness(.95);}
+.tl-num{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  font-weight:600;line-height:1;margin-bottom:3px;
+}
+.tl-lbl{font-size:8px;line-height:1.3;opacity:.8;}
+
+/* ── ACCORDION ── */
+.faq-section{margin-bottom:8px;}
+
+.faq-item{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;margin-bottom:6px;
+  transition:box-shadow .15s;
+}
+.faq-item:hover{box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.faq-item.open{box-shadow:0 3px 16px rgba(26,95,212,.08);border-color:#c5d4f0;}
+
+.faq-q{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:14px 16px;background:none;border:none;cursor:pointer;
+  text-align:left;font-family:'Inter',sans-serif;
+  transition:background .12s;
+}
+.faq-q:hover{background:var(--bg);}
+.faq-item.open .faq-q{background:var(--blue-bg);}
+
+.faq-num{
+  width:26px;height:26px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;
+}
+.faq-qtext{
+  flex:1;font-size:13px;font-weight:600;color:var(--text);line-height:1.35;
+}
+.faq-icon{
+  width:18px;height:18px;border-radius:50%;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--muted2);flex-shrink:0;transition:transform .2s;
+  background:var(--white);
+}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:var(--blue);color:#fff;border-color:var(--blue);}
+
+.faq-body{
+  display:none;padding:0 16px 16px 54px;
+}
+.faq-item.open .faq-body{display:block;}
+
+.faq-desc{
+  font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:14px;
+}
+
+/* Info pills inside answers */
+.faq-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.pill{
+  font-size:10px;font-family:'JetBrains Mono',monospace;
+  border-radius:4px;padding:2px 8px;border:1px solid;
+}
+.pill-blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
+.pill-red{background:#fef2f2;color:#dc2626;border-color:#fecaca;}
+.pill-green{background:#f0fdf4;color:#15803d;border-color:#bbf7d0;}
+.pill-amber{background:#fffbeb;color:#a16207;border-color:#fde68a;}
+.pill-purple{background:#faf5ff;color:#7c3aed;border-color:#e9d5ff;}
+.pill-gray{background:#f8fafc;color:#475569;border-color:#e2e8f0;}
+
+/* Actors row */
+.faq-actors{
+  display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;
+  border-top:1px solid var(--border);
+}
+.actor{
+  font-size:9px;color:var(--muted2);font-family:'JetBrains Mono',monospace;
+  display:flex;align-items:center;gap:4px;
+}
+.actor::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--muted2);flex-shrink:0;}
+
+/* Alert box */
+.faq-alert{
+  background:#fef2f2;border:1px solid #fecaca;border-radius:7px;
+  padding:10px 13px;margin-top:10px;
+  font-size:12px;color:#991b1b;line-height:1.65;
+}
+
+/* Bottom note */
+.bottom-note{
+  margin-top:48px;padding:18px 20px;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:10px;font-size:12px;color:var(--muted);line-height:1.8;
+  text-align:center;
+}
+.bottom-note a{color:var(--blue);text-decoration:none;}
+.bottom-note a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<div id="ik-nav"></div>
+<script src="nav.js"></script>
+
+<div class="page">
+
+  <div class="page-eyebrow">FAQ · Pyetjet e shpeshta</div>
+  <h1 class="page-title">Si funksionon një projekt infrastrukturor në Kosovë?</h1>
+  <p class="page-sub">Çdo projekt rrugor kalon nëpër 7 faza të detyrueshme — nga planifikimi fillestar deri te garantia pas hapjes. Këtu shpjegojmë secilin hap, institucionet përkatëse dhe çfarë mund të shkojë gabim.</p>
+
+  <!-- Timeline bar -->
+  <div class="timeline" id="timeline">
+    <div class="tl-step" style="background:#e0f2fe" onclick="openFaq(0)">
+      <div class="tl-num" style="color:#0369a1">1</div>
+      <div class="tl-lbl" style="color:#0369a1">Planifikim</div>
+    </div>
+    <div class="tl-step" style="background:#ede9fe" onclick="openFaq(1)">
+      <div class="tl-num" style="color:#6d28d9">2</div>
+      <div class="tl-lbl" style="color:#6d28d9">Shpronësim</div>
+    </div>
+    <div class="tl-step" style="background:#fee2e2" onclick="openFaq(2)">
+      <div class="tl-num" style="color:#dc2626">3</div>
+      <div class="tl-lbl" style="color:#dc2626">Prokurimi</div>
+    </div>
+    <div class="tl-step" style="background:#dcfce7" onclick="openFaq(3)">
+      <div class="tl-num" style="color:#15803d">4</div>
+      <div class="tl-lbl" style="color:#15803d">Kontrata</div>
+    </div>
+    <div class="tl-step" style="background:#fef9c3" onclick="openFaq(4)">
+      <div class="tl-num" style="color:#a16207">5</div>
+      <div class="tl-lbl" style="color:#a16207">Zbatimi</div>
+    </div>
+    <div class="tl-step" style="background:#f1f5f9" onclick="openFaq(5)">
+      <div class="tl-num" style="color:#475569">6</div>
+      <div class="tl-lbl" style="color:#475569">Pranimi</div>
+    </div>
+    <div class="tl-step" style="background:#d1fae5" onclick="openFaq(6)">
+      <div class="tl-num" style="color:#065f46">7</div>
+      <div class="tl-lbl" style="color:#065f46">Garancia</div>
+    </div>
+  </div>
+
+  <!-- FAQ accordion -->
+  <div id="faq-list"></div>
+
+  <div class="bottom-note">
+    Të dhënat e InfraKosova bazohen në dokumentet zyrtare të <a href="https://krpp.rks-gov.net" target="_blank">KRPP</a>,
+    <a href="https://mmphi.rks-gov.net" target="_blank">MMPHI</a> dhe
+    <a href="https://kryeministria.net" target="_blank">Kryeministrisë</a>.
+    Platforma është projekt individual i hapur — <a href="/cdn-cgi/l/email-protection#fc979392889d9788bc95929a8e9d97938f938a9dd2938e9b"><span class="__cf_email__" data-cfemail="7d161213091c16093d14131b0f1c16120e120b1c53120f1a">[email&#160;protected]</span></a>
+  </div>
+
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const FAQS = [
+  {
+    num: 1,
+    bg: '#e0f2fe', color: '#0369a1',
+    q: 'Faza 1 · Planifikim & Projektim — Si fillon një projekt rrugor?',
+    desc: 'Çdo projekt fillon me studimin e fizibilitetit dhe projektimin teknik. Ministria e Mjedisit, Planifikimit Hapësinor dhe Infrastrukturës (MMPHI) porositë studime teknike dhe mjedisore, të cilat mund të zgjasin 1–2 vjet. Në këtë fazë caktohen trasa rrugore, llogariten kostot dhe vlerësohet ndikimi mjedisor sipas ligjislacionit të BE-së.',
+    pills: [
+      {t:'Studim fizibiliteti', cls:'pill-blue'},
+      {t:'EIA — Vlerësim mjedisor', cls:'pill-green'},
+      {t:'Projektim teknik', cls:'pill-blue'},
+      {t:'Mund të zgjasë 1–3 vjet', cls:'pill-amber'},
+    ],
+    actors: ['MMPHI — autoritet planifikues', 'Kompani projektimi (të kontraktuara)', 'Ministria e Mjedisit'],
+    alert: null
+  },
+  {
+    num: 2,
+    bg: '#ede9fe', color: '#6d28d9',
+    q: 'Faza 2 · Shpronësimi — Çfarë ndodh me pronarët e tokës?',
+    desc: 'Para se punët të fillojnë, shteti duhet të blejë ose të shpronësojë (marrë me forcë me kompensim ligjor) të gjitha parcelat kadastrale që ndodhen brenda trasesë rrugore. Ky proces rregullohet nga Ligji Nr. 05/L-122 për Shpronësimin. Pronarët kanë të drejtë ankese dhe kompensimi sipas vlerës së tregut. Shpesh kjo fazë shkakton vonesa të konsiderueshme.',
+    pills: [
+      {t:'Ligji 05/L-122', cls:'pill-purple'},
+      {t:'Vendim qeveritar i detyrueshëm', cls:'pill-red'},
+      {t:'Kompensim me vlerë tregu', cls:'pill-green'},
+      {t:'E drejta e ankesës në gjykatë', cls:'pill-amber'},
+    ],
+    actors: ['Qeveria e Kosovës — vendim shpronësimi', 'Komuna — zbatim lokal', 'Gjykata — shqyrtim ankesash'],
+    alert: null
+  },
+  {
+    num: 3,
+    bg: '#fee2e2', color: '#dc2626',
+    q: 'Faza 3 · Prokurimi Publik — Si zgjidhet kontraktorët?',
+    desc: 'Prokurimi rregullohet nga Ligji Nr. 04/L-042 për Prokurimin Publik dhe mbikëqyret nga Komisioni Rregullativ i Prokurimit Publik (KRPP). Autoriteti kontraktues (zakonisht MMPHI ose komuna) shpall tenderin, pranon oferta dhe zgjedh ofertën me çmimin më të ulët teknikishtë kualifikues. Kompani humbëse mund të ankohen në Organin Shqyrtues të Prokurimit (OSHP) — ankesa aktive bllokon nënshkrimin e kontratës.',
+    pills: [
+      {t:'KRPP — mbikëqyrje e detyrueshme', cls:'pill-red'},
+      {t:'Procedurë e hapur', cls:'pill-blue'},
+      {t:'Oferta teknike + financiare', cls:'pill-blue'},
+      {t:'OSHP mund ta bllokojë', cls:'pill-red'},
+    ],
+    actors: ['KRPP — Komisioni Rregullativ i Prokurimit Publik', 'OSHP — Organi Shqyrtues i Prokurimit', 'Autoriteti kontraktues (MMPHI / Komuna)'],
+    alert: '⛔ Rreziku kryesor: Kompanitë humbëse mund të ankohen në OSHP. Me 5+ ankesa aktive, nënshkrimi i kontratës bllokohet plotësisht deri në vendim. Kjo ka ndodhur me Lot B-3 të N9.'
+  },
+  {
+    num: 4,
+    bg: '#dcfce7', color: '#15803d',
+    q: 'Faza 4 · Nënshkrimi i Kontratës — Çfarë përfshin kontrata?',
+    desc: 'Pasi OSHP nuk ka ankesa aktive (ose i ka zgjidhur ato), autoriteti kontraktues nënshkruan kontratën me punëkryesin fitues. Kontrata specifikon vlerën totale, afatin e ndërtimit, gjobat për vonesë (zakonisht 0.1% e vlerës kontraktuese për çdo ditë vonesë), kushtet e pagesës dhe detyrimet e sigurisë dhe mbikëqyrjes. Bashkë me kontratën e punimeve, nënshkruhet edhe kontrata e mbikëqyrësit të pavarur.',
+    pills: [
+      {t:'Gjoba 0.1%/ditë për vonesë', cls:'pill-amber'},
+      {t:'Sigurim performanc 10%', cls:'pill-green'},
+      {t:'Kontratë mbikëqyrësi e veçantë', cls:'pill-blue'},
+      {t:'Regjistrim në KRPP i detyrueshëm', cls:'pill-blue'},
+    ],
+    actors: ['Punëkryesi (kontraktorë)', 'MMPHI / Komuna — autoritet kontraktues', 'Mbikëqyrësi i pavarur (inxhinier)'],
+    alert: null
+  },
+  {
+    num: 5,
+    bg: '#fef9c3', color: '#a16207',
+    q: 'Faza 5 · Zbatimi (Ndërtimi) — Si monitorohen punimet?',
+    desc: 'Ky është hapi ku punimet fizike fillojnë. Mbikëqyrësi i pavarur prodhon raporte mujore për autoritetin kontraktues. Inspektoriati i Ndërtimit (KPMM) mund të bëjë inspektime të paparalajmëruara. Pagesat e punëkryesit bëhen me çertifikate pune të nënshkruara nga mbikëqyrësi. Çdo devijim nga projekti origjinal kërkon urdhër ndryshimi (variation order) të aprovuar.',
+    pills: [
+      {t:'Raporte mujore nga mbikëqyrësi', cls:'pill-amber'},
+      {t:'Inspektime KPMM', cls:'pill-amber'},
+      {t:'Çertifikata pune për pagesa', cls:'pill-green'},
+      {t:'Variation order për ndryshime', cls:'pill-blue'},
+    ],
+    actors: ['Punëkryesi — zbatues i punimeve', 'Mbikëqyrësi — certifikues i pagesave', 'KPMM — Inspektorati i Ndërtimit'],
+    alert: null
+  },
+  {
+    num: 6,
+    bg: '#f1f5f9', color: '#475569',
+    q: 'Faza 6 · Pranimi Teknik — Si verifikohet cilësia e punimeve?',
+    desc: 'Pas përfundimit të punimeve, autoriteti kontraktues formon Komisionin e Pranimit Teknik — zakonisht 3–5 ekspertë teknikë. Komisioni inspekton të gjitha punimet, kontrollon konformitetin me projektin, teston materialet dhe dokumenton çdo defekt. Nëse defektet janë të mëdha, pranimi mund të refuzohet dhe punëkryesi detyrohet t\'i korrigjojë pa kosto shtesë.',
+    pills: [
+      {t:'Komision 3–5 ekspertë', cls:'pill-gray'},
+      {t:'Protokoll pranimi zyrtar', cls:'pill-gray'},
+      {t:'Lista defektesh (punch list)', cls:'pill-amber'},
+      {t:'ZKA mund të auditojë procesin', cls:'pill-gray'},
+    ],
+    actors: ['Komisioni i Pranimit Teknik', 'MMPHI — koordinator', 'ZKA — Zyra Kombëtare e Auditimit (vëzhgues)'],
+    alert: null
+  },
+  {
+    num: 7,
+    bg: '#d1fae5', color: '#065f46',
+    q: 'Faza 7 · Hapja & Garancia — Çfarë ndodh pas hapjes zyrtare?',
+    desc: 'Pasi komisioni i pranimit nënshkruan protokollin, rruga hapet zyrtarisht për qarkullim. Fillon periudha e garancisë — zakonisht 24 muaj — gjatë së cilës punëkryesi është i detyruar të riparojë çdo defekt konstruktiv pa kosto. Pas mbylljes së garancisë, Zyra Kombëtare e Auditimit (ZKA) mund të kryejë auditim ex-post të tërë projektit — vlerën, procedurat dhe rezultatin.',
+    pills: [
+      {t:'Garanci 24 muaj e detyrueshme', cls:'pill-green'},
+      {t:'Hapje zyrtare me Kuvend / Kryeministër', cls:'pill-green'},
+      {t:'ZKA auditim ex-post', cls:'pill-gray'},
+      {t:'Mbyllja e sigurimit financiar', cls:'pill-blue'},
+    ],
+    actors: ['Punëkryesi — garancë 24 muaj', 'MMPHI — mbyllje administrative', 'ZKA — auditim ex-post pas 1–2 vjetësh'],
+    alert: null
+  }
+];
+
+function openFaq(index) {
+  const items = document.querySelectorAll('.faq-item');
+  const item = items[index];
+  if (!item) return;
+  const isOpen = item.classList.contains('open');
+  items.forEach(i => i.classList.remove('open'));
+  if (!isOpen) {
+    item.classList.add('open');
+    item.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
+function buildFaq() {
+  const list = document.getElementById('faq-list');
+  FAQS.forEach((f, i) => {
+    const pills = f.pills.map(p => `<span class="pill ${p.cls}">${p.t}</span>`).join('');
+    const actors = f.actors.map(a => `<span class="actor">${a}</span>`).join('');
+    const alert = f.alert ? `<div class="faq-alert">${f.alert}</div>` : '';
+    const item = document.createElement('div');
+    item.className = 'faq-item';
+    item.innerHTML = `
+      <button class="faq-q" onclick="openFaq(${i})">
+        <div class="faq-num" style="background:${f.bg};color:${f.color}">${f.num}</div>
+        <div class="faq-qtext">${f.q}</div>
+        <div class="faq-icon">+</div>
+      </button>
+      <div class="faq
